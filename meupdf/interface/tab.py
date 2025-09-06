@@ -61,6 +61,7 @@ class Page(Image):
     page:pymupdf.Page
     page_number:int
     size:tuple[int, int]
+    original_size:tuple[int, int]
     loaded:bool = False
     
     def __init__(self, document:pymupdf.Document, page:int, **kwargs):
@@ -68,6 +69,7 @@ class Page(Image):
         self.page_number = page
         self.page = self.document[self.page_number]
         self.size = (int(self.page.bound()[2]), int(self.page.bound()[3]))
+        self.original_size = (self.size[0], self.size[1])
         self.loaded = False
         super().__init__(**kwargs)
     
@@ -84,6 +86,17 @@ class Page(Image):
         self.texture = None
         self.remove_from_cache()
         self.loaded = False
+    
+    def resize(self, view_options:ViewOptions=ViewOptions()):
+        if view_options.rotation % 180 == 0:
+            self.size = (int(self.original_size[0] * view_options.zoom), int(self.original_size[1] * view_options.zoom))
+        else:
+            self.size = (int(self.original_size[1] * view_options.zoom), int(self.original_size[0] * view_options.zoom))
+        self.width, self.height = self.size
+        if self.loaded:
+            self.load_page(view_options=view_options)
+        else:
+            Logger.debug(f'Page: What size is page {self.page_number} now? {self.size}')
 
 class PDFTab(ScrollView):
     pages:list
@@ -120,26 +133,34 @@ class PDFTab(ScrollView):
         self.bind(on_scroll_stop=lambda *args, **kwargs: self.display_pages())
     
     def load_pages(self):
-        self.width = 0
-        self.height = 0
 
         for p in range(self.document.page_count):
             page = Page(self.document, p, size_hint=(1, None))
             page.load_page(view_options=self.view_options)
             self.pages.append(page)
-            if page.width > self.width:
-                self.width = page.width
-            self.height += page.height
-            if p < self.document.page_count:
-                self.height += self.spacer_height
-            if hasattr(self, 'content'):
-                self.content.add_widget(page)
-                self.content.width = self.width
-                self.content.height = self.height
 
         Logger.debug(f"PDFTab: Loaded {p+1} pages from the document.")
 
+        self.place_pages()
+
+    def place_pages(self):
+        self.width = 0
+        self.height = 0
+        
+        for p in range(len(self.pages)):
+            if self.pages[p].width > self.width:
+                self.width = self.pages[p].width
+            self.height += self.pages[p].height
+            if p < self.document.page_count:
+                self.height += self.spacer_height
+            if hasattr(self, 'content'):
+                self.content.add_widget(self.pages[p])
+                self.content.width = self.width
+                self.content.height = self.height
+
     def display_pages(self):
+        page_top:int = 0
+        page_bottom:int = 0
         first:int = -1
         last:int = -1
         visible:bool = False
@@ -150,6 +171,7 @@ class PDFTab(ScrollView):
         bottom = top + Window.height
 
         # Search for pages in the visible area
+        p_top:int = 0
         for p in range(self.document.page_count):
             page_top = sum(self.pages[i].height + self.spacer_height for i in range(p))
             page_bottom = page_top + self.pages[p].height
@@ -163,6 +185,7 @@ class PDFTab(ScrollView):
             elif visible:
                 last = p - 1
                 break
+            p_top += self.pages[p].height + self.spacer_height
 
         first -= self.page_cache
         last += self.page_cache
@@ -182,31 +205,33 @@ class PDFTab(ScrollView):
     
     def rotate_right(self):
         self.view_options.rotate_right()
-        self.reload()
+        self.resize()
 
     def rotate_left(self):
         self.view_options.rotate_left()
-        self.reload()
+        self.resize()
     
     def zoom_in(self):
         self.view_options.zoom_in()
-        self.reload()
+        self.resize()
 
     def zoom_out(self):
         self.view_options.zoom_out()
-        self.reload()
+        self.resize()
     
     def set_zoom(self, zoom:float):
         self.view_options.set_zoom(zoom)
-        self.reload()
+        self.resize()
 
-    def reload(self):
-        Logger.debug(f"PDFTab: Reloading document with zoom={self.view_options.zoom} and rotation={self.view_options.rotation}.")
+    def resize(self):
+        scroll_x = self.scroll_x
+        scroll_y = self.scroll_y
+        Logger.debug(f"PDFTab: Resizing document with zoom={self.view_options.zoom} and rotation={self.view_options.rotation}.")
         self.content.clear_widgets()
-        self.pages = []
-        self.current_page = 0
-        self.load_pages()
-        self.display_pages()
+        for p in self.pages:
+            p.resize(view_options=self.view_options)
+        self.place_pages()
+        self.scroll_x, self.scroll_y = scroll_x, scroll_y
 
     def close(self):
         self.document.close()
