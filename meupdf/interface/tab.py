@@ -1,0 +1,218 @@
+import kivy, pymupdf, io
+
+from kivy.uix.widget import Widget
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.image import Image, CoreImage
+from kivy.properties import NumericProperty
+from kivy.core.window import Window
+from kivy.logger import Logger
+
+class ViewOptions(object):
+    zoom_list:list[float] = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0, 5.0]
+    zoom_index:int = 3
+    zoom:float = 1.0
+    rotation:int = 0
+
+    def __init__(self, zoom:float=1.0, rotation:int=0):
+        self.zoom = zoom
+
+        self.set_zoom(zoom)
+
+        self.rotation = rotation
+
+    def rotate_right(self):
+        self.rotation += 90
+        if self.rotation == 360:
+            self.rotation = 0
+    
+    def rotate_left(self):
+        self.rotation -= 90
+        if self.rotation == -360:
+            self.rotation = 0
+    
+    def zoom_in(self):
+        self.zoom_index += 1
+        if self.zoom_index >= len(self.zoom_list):
+            self.zoom_index = len(self.zoom_list) - 1
+        self.zoom = self.zoom_list[self.zoom_index]
+
+    def zoom_out(self):
+        self.zoom_index -= 1
+        if self.zoom_index < 0:
+            self.zoom_index = 0
+        self.zoom = self.zoom_list[self.zoom_index]
+    
+    def set_zoom(self, zoom:float):
+        if zoom in self.zoom_list:
+            self.zoom_index = self.zoom_list.index(zoom)
+        else:
+            for z in zoom_list:
+                if z > zoom:
+                    self.zoom_index = self.zoom_list.index(z) - 1
+                    break
+
+    def get_matrix_view(self):
+        return pymupdf.Matrix(self.zoom, self.zoom).prerotate(self.rotation)
+
+class Page(Image):
+    #TODO: load and unload pages dynamically to save memory
+    document:pymupdf.Document
+    page:pymupdf.Page
+    page_number:int
+    size:tuple[int, int]
+    loaded:bool = False
+    
+    def __init__(self, document:pymupdf.Document, page:int, **kwargs):
+        self.document = document
+        self.page_number = page
+        self.page = self.document[self.page_number]
+        self.size = (int(self.page.bound()[2]), int(self.page.bound()[3]))
+        self.loaded = False
+        super().__init__(**kwargs)
+    
+    def load_page(self, view_options:ViewOptions=ViewOptions()):
+        Logger.debug(f'Page: Current view options: zoom={view_options.zoom}, rotation={view_options.rotation}')
+        pix = self.page.get_pixmap(matrix=view_options.get_matrix_view())
+        img_data = io.BytesIO(pix.tobytes())
+        temp_img = CoreImage(img_data, ext="png").texture
+        self.size = (temp_img.width, temp_img.height)
+        self.texture = temp_img
+        self.loaded = True
+
+    def unload_page(self):
+        self.texture = None
+        self.remove_from_cache()
+        self.loaded = False
+
+class PDFTab(ScrollView):
+    pages:list
+    current_page:int
+    document:pymupdf.Document
+    parent_widget:Widget
+    file_path:str
+    content:BoxLayout
+    width:int
+    height:int
+    spacer_height:int = 20
+    page_cache:NumericProperty
+    view_options:ViewOptions
+
+    def __init__(self, parent:Widget, file_path:str, **kwargs):
+        self.pages = []
+        self.current_page = 0
+        self.document = pymupdf.open(file_path)
+        self.file_path = file_path
+        self.parent_widget = parent
+        self.page_cache = 3
+        self.view_options = ViewOptions()
+        self.load_pages()
+        super().__init__(**kwargs)
+        self.scroll_type = ['bars', 'content']
+        self.content = BoxLayout(size_hint=(None, None), size=(self.width, self.height), orientation='vertical', spacing=self.spacer_height)
+        self.add_widget(self.content)
+        for p in self.pages:
+            self.content.add_widget(p)
+        self.display_pages()
+
+        # Bind events
+        self.bind(on_scroll_move=lambda *args, **kwargs: self.display_pages())
+        self.bind(on_scroll_stop=lambda *args, **kwargs: self.display_pages())
+    
+    def load_pages(self):
+        self.width = 0
+        self.height = 0
+
+        for p in range(self.document.page_count):
+            page = Page(self.document, p, size_hint=(1, None))
+            page.load_page(view_options=self.view_options)
+            self.pages.append(page)
+            if page.width > self.width:
+                self.width = page.width
+            self.height += page.height
+            if p < self.document.page_count:
+                self.height += self.spacer_height
+            if hasattr(self, 'content'):
+                self.content.add_widget(page)
+                self.content.width = self.width
+                self.content.height = self.height
+
+        Logger.debug(f"PDFTab: Loaded {p+1} pages from the document.")
+
+    def display_pages(self):
+        first:int = -1
+        last:int = -1
+        visible:bool = False
+
+        # Calculate the visible area in the ScrollView
+        center = (1 - self.scroll_y) * (self.viewport_size[1] - Window.height) + Window.height / 2
+        top = center - Window.height / 2
+        bottom = top + Window.height
+
+        # Search for pages in the visible area
+        for p in range(self.document.page_count):
+            page_top = sum(self.pages[i].height + self.spacer_height for i in range(p))
+            page_bottom = page_top + self.pages[p].height
+            if page_bottom >= top and page_top <= bottom:
+                if first == -1:
+                    first = p
+                visible = True
+                if page_top <= center <= page_bottom:
+                    self.current_page = p
+                    Logger.debug(f"PDFTab: Current page is {self.current_page}.")
+            elif visible:
+                last = p - 1
+                break
+
+        first -= self.page_cache
+        last += self.page_cache
+        if first < 0:
+            first = 0
+        if last >= self.document.page_count:
+            last = self.document.page_count - 1
+        for p in range(self.document.page_count):
+            if first <= p <= last:
+                if not self.pages[p].loaded:
+                    self.pages[p].load_page(view_options=self.view_options)
+                    Logger.debug(f"PDFTab: Displaying page {p}.")
+            else:
+                if self.pages[p].loaded:
+                    self.pages[p].unload_page()
+        Logger.debug(f"PDFTab: Displaying pages {first} to {last}.")
+    
+    def rotate_right(self):
+        self.view_options.rotate_right()
+        self.reload()
+
+    def rotate_left(self):
+        self.view_options.rotate_left()
+        self.reload()
+    
+    def zoom_in(self):
+        self.view_options.zoom_in()
+        self.reload()
+
+    def zoom_out(self):
+        self.view_options.zoom_out()
+        self.reload()
+    
+    def set_zoom(self, zoom:float):
+        self.view_options.set_zoom(zoom)
+        self.reload()
+
+    def reload(self):
+        Logger.debug(f"PDFTab: Reloading document with zoom={self.view_options.zoom} and rotation={self.view_options.rotation}.")
+        self.content.clear_widgets()
+        self.pages = []
+        self.current_page = 0
+        self.load_pages()
+        self.display_pages()
+
+    def close(self):
+        self.document.close()
+
+    def __del__(self):
+        self.close()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()

@@ -1,0 +1,50 @@
+#:kivy 2.3.1
+
+<MeuPDFRoot>:
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, None)
+            pos_hint: {'top': 1}
+            Button:
+                text: "Load PDF"
+                size_hint: (0.1, 0.1)
+                pos_hint: {'top': 1}
+                on_release: root.show_file_chooser(root)
+            Button:
+                text: "<-"
+                size_hint: (0.1, 0.1)
+                pos_hint: {'top': 1}
+                on_release: root.contents.current_tab.content.rotate_left()
+            Button:
+                text: "->"
+                size_hint: (0.1, 0.1)
+                pos_hint: {'top': 1}
+                on_release: root.contents.current_tab.content.rotate_right()
+            Button:
+                text: "-"
+                size_hint: (0.1, 0.1)
+                pos_hint: {'top': 1}
+                on_release: root.contents.current_tab.content.zoom_out()
+            Button:
+                text: "+"
+                size_hint: (0.1, 0.1)
+                pos_hint: {'top': 1}
+                on_release: root.contents.current_tab.content.zoom_in()
+        TabbedPanel:
+            id: contents
+            do_default_tab: False
+            tab_height: '30dp'
+            tab_pos: 'top_left'
+            size_hint: (1, 0.9)
+            pos_hint: {'top': 1}
+            TabbedPanelItem:
+                text: "Welcome"
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: "Welcome to MeuPDF!\n\nLoad a PDF file to get started."
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
