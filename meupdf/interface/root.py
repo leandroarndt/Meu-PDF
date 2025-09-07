@@ -8,7 +8,9 @@ from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
 from kivy.config import Config
 from kivy.logger import Logger
 
+from collections import OrderedDict
 from pathlib import Path
+import json
 
 from . import tab
 
@@ -31,8 +33,21 @@ class MeuPDFRoot(BoxLayout):
         popup.open()
 
     def load_pdf(self, selection, popup):
+        last_files:OrderedDict = OrderedDict()
+        page:int = 0
         if selection:
             self.config.set('permanent', 'last_filepath', str(Path(selection[0]).parent))
+            last_files_json = self.config.get('permanent', 'last_files')
+            try:
+                last_files = json.loads(last_files_json, object_hook=OrderedDict)
+            except json.JSONDecodeError:
+                pass
+            try:
+                page = last_files[selection[0]]
+                last_files.move_to_end(selection[0], last=False)
+            except KeyError:
+                last_files[selection[0]] = 0
+            self.config.set('permanent', 'last_files', json.dumps(last_files))
             self.config.write()
             for f in selection:
                 new_tab_item = TabbedPanelItem(text=Path(f).name)
@@ -40,5 +55,6 @@ class MeuPDFRoot(BoxLayout):
                 new_tab_item.content = new_tab
                 self.contents.add_widget(new_tab_item)
                 self.contents.switch_to(new_tab_item)
+                if page: new_tab.go_to_page(page)
         popup.dismiss()
 

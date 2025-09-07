@@ -16,6 +16,7 @@ class MeuPDFApp(App):
         config.setdefaults(
             'permanent', {
                 'last_filepath': str(Path.home()),
+                'last_files': '{}',
             }
         )
         Logger.info("MeuPDFApp: set defaults.")
@@ -31,6 +32,32 @@ class MeuPDFApp(App):
         root = MeuPDFRoot(self.config)
 
         return root
+
+    def save_pages(self):
+        for tab in self.root.contents.tab_list:
+            try:
+                tab.content.save_page()
+            except AttributeError: # Not a document tab
+                pass
+    
+    def close_docs(self):
+        for tab in self.root.contents.tab_list:
+            try:
+                tab.content.close()
+            except AttributeError: # Not a document tab
+                pass
+
+    def on_pause(self):
+        self.save_pages()
+        return super().on_pause()
+    
+    def on_resume(self):
+        return super().on_resume()
+    
+    def on_stop(self):
+        self.save_pages()
+        self.close_docs()
+        return super().on_stop()
 
 if __name__ == '__main__':
     MeuPDFApp().run()
