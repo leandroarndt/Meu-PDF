@@ -261,9 +261,18 @@ class PDFTab(ScrollView):
         self.scroll_x, self.scroll_y = scroll_x, scroll_y
 
     def save_page(self):
+        # Save current document page
         last_files:OrderedDict = json.loads(self.config.get('permanent', 'last_files'), object_hook=OrderedDict)
         last_files[self.file_path] = self.current_page
+
+        # Move to the first place on the last files list
         last_files.move_to_end(self.file_path, last=False)
+
+        # Trim file list
+        for f in list(last_files.keys())[int(self.config.get('interface', 'last_files_length')):]:
+            last_files.pop(f)
+
+        # Write the list down
         self.config.set('permanent', 'last_files', json.dumps(last_files))
         self.config.write()
 
