@@ -7,6 +7,7 @@ from kivy.uix.image import Image, CoreImage
 from kivy.properties import NumericProperty
 from kivy.core.window import Window
 from kivy.logger import Logger
+from kivy.clock import Clock
 
 class ViewOptions(object):
     zoom_list:list[float] = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0, 5.0]
@@ -108,7 +109,7 @@ class PDFTab(ScrollView):
     width:int
     height:int
     spacer_height:int = 20
-    page_cache:NumericProperty
+    page_cache:int
     view_options:ViewOptions
 
     def __init__(self, parent:Widget, file_path:str, **kwargs):
@@ -171,7 +172,6 @@ class PDFTab(ScrollView):
         bottom = top + Window.height
 
         # Search for pages in the visible area
-        p_top:int = 0
         for p in range(self.document.page_count):
             page_top = sum(self.pages[i].height + self.spacer_height for i in range(p))
             page_bottom = page_top + self.pages[p].height
@@ -185,7 +185,6 @@ class PDFTab(ScrollView):
             elif visible:
                 last = p - 1
                 break
-            p_top += self.pages[p].height + self.spacer_height
 
         first -= self.page_cache
         last += self.page_cache
@@ -202,6 +201,19 @@ class PDFTab(ScrollView):
                 if self.pages[p].loaded:
                     self.pages[p].unload_page()
         Logger.debug(f"PDFTab: Displaying pages {first} to {last}.")
+    
+    def go_to_page(self, page:int):
+        if 0 < page < self.document.page_count:
+            self.current_page = page - 1
+        elif page >= self.document.page_count:
+            self.current_page = self.document.page_count - 1
+        else:
+            self.current_page = 0
+        try:
+            self.scroll_to(self.pages[self.current_page])
+            Clock.schedule_once(lambda dt: self.display_pages(), 0.1) # Needs a delay to work properly
+        except Exception as e:
+            Logger.error(f"PDFTab: Could not go to page {page}: {e}")    
     
     def rotate_right(self):
         self.view_options.rotate_right()

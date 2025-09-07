@@ -12,6 +12,20 @@
                 size_hint: (0.1, 0.1)
                 pos_hint: {'top': 1}
                 on_release: root.show_file_chooser(root)
+            Label:
+                text: "Page"
+                size_hint: (0.1, 0.1)
+                pos_hint: {'top': 1}
+                font_size: '20sp'
+                bold: False
+            TextInput:
+                id: page_number
+                text: "1"
+                size_hint: (0.1, 0.25)
+                pos_hint: {'top': 1}
+                multiline: False
+                input_filter: 'int'
+                on_text_validate: root.contents.current_tab.content.go_to_page(int(self.text)) #(int(self.text) if self.text.isdigit() else 1)
             Button:
                 text: "<-"
                 size_hint: (0.1, 0.1)
