@@ -19,6 +19,11 @@ class MeuPDFApp(App):
                 'last_files': '{}',
             }
         )
+        config.setdefaults(
+            'interface', {
+                'last_files_length': 50,
+            }
+        )
         Logger.info("MeuPDFApp: set defaults.")
         config.write()
         Logger.info("MeuPDFApp: file written.")
