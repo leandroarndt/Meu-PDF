@@ -1,5 +1,7 @@
-import kivy, pymupdf, io
+import kivy, pymupdf, io, json
+from collections import OrderedDict
 
+from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.boxlayout import BoxLayout
@@ -8,6 +10,7 @@ from kivy.properties import NumericProperty
 from kivy.core.window import Window
 from kivy.logger import Logger
 from kivy.clock import Clock
+from kivy.config import Config
 
 class ViewOptions(object):
     zoom_list:list[float] = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0, 5.0]
@@ -113,6 +116,7 @@ class PDFTab(ScrollView):
     spacer_height:int = 20
     page_cache:int
     view_options:ViewOptions
+    config:Config
 
     def __init__(self, parent:Widget, file_path:str, **kwargs):
         self.pages = []
@@ -124,9 +128,12 @@ class PDFTab(ScrollView):
         self.view_options = ViewOptions()
         self.load_pages()
         super().__init__(**kwargs)
+        self.config = App.get_running_app().config
         self.scroll_type = ['bars', 'content']
+
         self.content = BoxLayout(size_hint=(None, None), size=(self.width, self.height), orientation='vertical', spacing=self.spacer_height)
         self.add_widget(self.content)
+
         for p in self.pages:
             self.content.add_widget(p)
         self.display_pages()
@@ -241,7 +248,6 @@ class PDFTab(ScrollView):
         self.resize()
     
     def set_zoom(self, zoom:float):
-        self.view_options.set_zoom(zoom)
         self.resize()
 
     def resize(self):
@@ -254,7 +260,15 @@ class PDFTab(ScrollView):
         self.place_pages()
         self.scroll_x, self.scroll_y = scroll_x, scroll_y
 
+    def save_page(self):
+        last_files:OrderedDict = json.loads(self.config.get('permanent', 'last_files'), object_hook=OrderedDict)
+        last_files[self.file_path] = self.current_page
+        last_files.move_to_end(self.file_path, last=False)
+        self.config.set('permanent', 'last_files', json.dumps(last_files))
+        self.config.write()
+
     def close(self):
+        self.save_page()
         self.document.close()
 
     def __del__(self):
