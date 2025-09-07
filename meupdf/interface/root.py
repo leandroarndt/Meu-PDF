@@ -5,6 +5,8 @@ from kivy.uix.popup import Popup
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
+from kivy.uix.label import Label
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.config import Config
 from kivy.logger import Logger
 
@@ -14,6 +16,9 @@ import json
 
 from . import tab
 
+class ButtonedLabel(ButtonBehavior, Label):
+    pass
+
 class MeuPDFRoot(BoxLayout):
     pdf_path = StringProperty("")
     page_number = NumericProperty(0)
@@ -22,8 +27,23 @@ class MeuPDFRoot(BoxLayout):
 
     def __init__(self, config:Config, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        last_files:OrderedDict = OrderedDict()
         self.config = config
         self.contents = self.ids['contents']
+        self.welcome = self.contents.get_def_tab_content()
+        last_files_json = self.config.get('permanent', 'last_files')
+        try:
+            last_files = json.loads(last_files_json, object_hook=OrderedDict)
+        except json.JSONDecodeError:
+            pass
+        for f, p in last_files.items():
+            if Path(f).is_file():
+                self.ids['recent_files_box'].add_widget(
+                    ButtonedLabel(
+                        text=Path(f).name,
+                        on_release=lambda instance, file_path=f, *args, **kwargs: self.load_pdf([file_path], None)
+                    )
+                )
 
     def show_file_chooser(self, instance):
         content = FileChooserIconView()
@@ -56,5 +76,7 @@ class MeuPDFRoot(BoxLayout):
                 self.contents.add_widget(new_tab_item)
                 self.contents.switch_to(new_tab_item)
                 if page: new_tab.go_to_page(page)
-        popup.dismiss()
-
+        try:
+            popup.dismiss()
+        except AttributeError: # Did not come from a file dialogue
+            pass
