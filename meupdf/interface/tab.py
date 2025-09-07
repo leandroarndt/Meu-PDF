@@ -82,11 +82,13 @@ class Page(Image):
         self.size = (temp_img.width, temp_img.height)
         self.texture = temp_img
         self.loaded = True
+        Logger.debug(f'Page: Loaded page {self.page_number}.')
 
     def unload_page(self):
         self.texture = None
         self.remove_from_cache()
         self.loaded = False
+        Logger.debug(f'Page: unloaded page {self.page_number}.')
     
     def resize(self, view_options:ViewOptions=ViewOptions()):
         if view_options.rotation % 180 == 0:
@@ -118,7 +120,7 @@ class PDFTab(ScrollView):
         self.document = pymupdf.open(file_path)
         self.file_path = file_path
         self.parent_widget = parent
-        self.page_cache = 3
+        self.page_cache = 5
         self.view_options = ViewOptions()
         self.load_pages()
         super().__init__(**kwargs)
@@ -183,23 +185,29 @@ class PDFTab(ScrollView):
                     self.current_page = p
                     Logger.debug(f"PDFTab: Current page is {self.current_page}.")
             elif visible:
-                last = p - 1
+                last = p
                 break
 
+        Logger.info(f"PDFTab: Last page was calculated as {last}.")
+        if last == -1:
+            last = self.document.page_count - 1
         first -= self.page_cache
         last += self.page_cache
+        Logger.info(f"PDFTab: Last page was calculated as {last} after cache.")
         if first < 0:
             first = 0
         if last >= self.document.page_count:
             last = self.document.page_count - 1
+        Logger.info(f"PDFTab: Last page was corrected to {last}.")
+        Logger.info(f"PDFTab: Visible pages are from {first} to {last}. Current page is {self.current_page}.")
         for p in range(self.document.page_count):
-            if first <= p <= last:
+            current_pages = range(first, last + 1)
+            if p in current_pages:
                 if not self.pages[p].loaded:
                     self.pages[p].load_page(view_options=self.view_options)
                     Logger.debug(f"PDFTab: Displaying page {p}.")
-            else:
-                if self.pages[p].loaded:
-                    self.pages[p].unload_page()
+            if p not in current_pages and self.pages[p].loaded:
+                self.pages[p].unload_page()
         Logger.debug(f"PDFTab: Displaying pages {first} to {last}.")
     
     def go_to_page(self, page:int):
@@ -211,7 +219,8 @@ class PDFTab(ScrollView):
             self.current_page = 0
         try:
             self.scroll_to(self.pages[self.current_page])
-            Clock.schedule_once(lambda dt: self.display_pages(), 0.1) # Needs a delay to work properly
+            Clock.schedule_once(lambda dt: self.display_pages(), 1) # Needs a delay to work properly
+            self.display_pages()
         except Exception as e:
             Logger.error(f"PDFTab: Could not go to page {page}: {e}")    
     
