@@ -21,9 +21,11 @@ test_sources = [
 ]
 
 requires = [
+    "pymupdf",
 ]
 test_requires = [
     "pytest",
+    "pymupdf",
 ]
 
 [tool.briefcase.app.meupdf.macOS]

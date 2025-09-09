@@ -7,6 +7,8 @@ from toga.style.pack import COLUMN, ROW, Pack
 
 from meupdf.interface.tab import DocumentTab
 
+# toga.Widget.DEBUG_LAYOUT_ENABLED = True
+
 class MeuPDF(toga.App):
     main_box:toga.Box
     tab_area:toga.OptionContainer
@@ -41,7 +43,9 @@ class MeuPDF(toga.App):
     def open_dialog_closed(self, task):
         file = task.result()
         if file:
-            self.tab_area.content.append(DocumentTab(file))
+            new_tab = DocumentTab(file)
+            self.tab_area.content.append(new_tab)
+            self.tab_area.current_tab = new_tab
 
 def main():
     return MeuPDF()
