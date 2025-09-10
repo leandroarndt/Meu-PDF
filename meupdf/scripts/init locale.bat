@@ -1,0 +1,1 @@
+pybabel.exe init -D meupdf -i src/meupdf/resources/locale/meupdf.po -d src/meupdf/resources/locale -l %1
