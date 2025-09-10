@@ -1,1 +1,1 @@
-pybabel.exe extract -o src/meupdf/resources/locale/meupdf.po --project="Meu PDF" --copyright-holder="Leandro Arndt" src/meupdf
+pybabel.exe extract -o src/meupdf/resources/locale/meupdf.po --project="Meu PDF" --copyright-holder="Leandro Arndt" --msgid-bugs-address="meupdf.locale@visaocatolica.com.br" src/meupdf
