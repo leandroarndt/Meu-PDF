@@ -217,4 +217,4 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Custom
-meupdf/meupdf.ini
+*~

@@ -1,8 +1,7 @@
 """
 Free Open Source PDF viewer and editor
 """
-
-import toga, asyncio
+import toga, asyncio, sys
 from toga.style.pack import COLUMN, ROW, Pack
 
 from meupdf.interface.tab import DocumentTab
@@ -39,6 +38,8 @@ class MeuPDF(toga.App):
             toga.Command(
                 self.open_dialog,
                 text=_('Open'),
+                icon='resources/icons/open.png',
+                shortcut=toga.Key.MOD_1 + 'O',
                 tooltip=_('Open a PDF file'),
                 order=0,
                 group=toga.Group.FILE
@@ -46,6 +47,8 @@ class MeuPDF(toga.App):
             toga.Command(
                 self.open_merge_window,
                 text=_('Merge'),
+                shortcut=toga.Key.MOD_1 + 'M',
+                icon='resources/icons/merge.png',
                 tooltip=_('Merge two or more PDF documents'),
                 order=1,
                 group=toga.Group.FILE
