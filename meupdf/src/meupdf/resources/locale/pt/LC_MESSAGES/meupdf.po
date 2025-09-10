@@ -1,0 +1,28 @@
+# Portuguese translations for Meu PDF.
+# Copyright (C) 2025 Leandro Arndt
+# This file is distributed under the same license as the Meu PDF project.
+# LEANDRO ARNDT <meupdf@visaocatolica.com.br>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Meu PDF 0.0.1\n"
+"Report-Msgid-Bugs-To: meupdf@visaocatolica.com.br\n"
+"POT-Creation-Date: 2025-09-09 22:52-0300\n"
+"PO-Revision-Date: 2025-09-09 22:54-0300\n"
+"Last-Translator: LEANDRO ARNDT <meupdf@visaocatolica.com.br>\n"
+"Language: pt\n"
+"Language-Team: pt <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: src/meupdf/app.py:36
+msgid "Welcome"
+msgstr "Bem-vindo"
+
+#: src/meupdf/app.py:36
+msgid "Welcome to Meu PDF"
+msgstr "Bem-vindo ao Meu PDF"
+

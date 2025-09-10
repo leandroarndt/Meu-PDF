@@ -6,6 +6,7 @@ import toga, asyncio
 from toga.style.pack import COLUMN, ROW, Pack
 
 from meupdf.interface.tab import DocumentTab
+from meupdf.interface.merge import MergeWindow
 
 # toga.Widget.DEBUG_LAYOUT_ENABLED = True
 
