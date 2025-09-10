@@ -4,6 +4,7 @@ import pymupdf, io, json, logging, asyncio
 from collections import OrderedDict
 from pathlib import Path
 from toga import Image, ImageView
+import toga.constants
 from toga.style import pack
 import toga.style
 import toga.widgets
@@ -67,16 +68,16 @@ class Page(object):
     loaded:bool = False
     image:Image
     image_view:ImageView
-    box:toga.Box
+    parent:toga.Box
     
-    def __init__(self, document:pymupdf.Document, page:int, box:toga.Box, **kwargs):
+    def __init__(self, document:pymupdf.Document, page:int, parent:toga.Box, **kwargs):
         self.document = document
         self.page_number = page
         self.page = self.document[self.page_number]
         self.page_size = (int(self.page.bound()[2]), int(self.page.bound()[3]))
         self.original_size = (self.page.rect[2]-self.page.rect[0], self.page.rect[3]-self.page.rect[1])#(self.page_size[0], self.page_size[1])
         self.loaded = False
-        self.box = box
+        self.parent = parent
         # self.load_page()
     
     def load_page(self, view_options:ViewOptions=ViewOptions()):
@@ -86,13 +87,14 @@ class Page(object):
         self.image = toga.Image(src=img_data)
         self.image_view = toga.ImageView(self.image, style=pack.Pack(width=self.page_size[0], height=self.page_size[1]))
         # print(f'Page {self.page_number} size: {self.page_size}')
-        try:
-            if not self.box.children:
-                self.box.add(self.image_view)
-            else:
-                self.box.replace(0, self.image_view)
-        except:
-            pass
+        # try:
+        #     if not self.parent.children:
+        #         self.parent.add(self.image_view)
+        #     else:
+        #         self.parent.replace(0, self.image_view)
+        # except:
+        #     pass
+        self.parent.add(self.image_view)
         self.loaded = True
         logger.debug(f'Page: Loaded page {self.page_number}.')
 
@@ -115,6 +117,7 @@ class Page(object):
 class DocumentTab(toga.OptionItem):
     pages:list
     current_page:int
+    page_indicator:toga.TextInput
     document:pymupdf.Document
     file_path:str
     width:int
@@ -124,26 +127,52 @@ class DocumentTab(toga.OptionItem):
     view_options:ViewOptions
     scroll:toga.ScrollContainer
     scroll_content:toga.Box
+    scroll_pos:float
+    toolbox:toga.Box
     page_loaders = []
     async_task:asyncio.Task
+    redrawing:bool = False
+    changing_pos:bool = False
 
     def __init__(self, file_path:str, *args, **kwargs):
-        super().__init__(text=Path(file_path).name, content=toga.Box(), *args, **kwargs)
+        super().__init__(text=Path(file_path).name, content=toga.Box(style=pack.Pack(direction=toga.constants.COLUMN)), *args, **kwargs)
         self.pages = []
         self.current_page = 0
         self.file_path = file_path
         self.page_cache = 5
-        self.view_options = ViewOptions()     
-        self.scroll_content = toga.Box(style=pack.Pack(align_items=pack.CENTER, direction=pack.COLUMN))
+        self.view_options = ViewOptions()
+        self.redrawing:bool = False
+        self.changing_pos:bool = False
+
+        # Load document
+        self.document = pymupdf.open(self.file_path)
+
+        # Content area (scroll)
+        self.scroll_content = toga.Box(style=pack.Pack(align_items=pack.CENTER, direction=pack.COLUMN, gap=DocumentTab.margin))
         self.scroll = toga.ScrollContainer(content=self.scroll_content, style=pack.Pack(flex=1))
         self.current_scroll = (self.scroll.horizontal_position, self.scroll.vertical_position)
         # self.scroll.on_scroll = lambda widget, *kwargs: asyncio.create_task(self.display_pages())
+
+        # Toolbox
+        self.toolbox = toga.Box(style=pack.Pack(direction=toga.constants.ROW))
+        self.toolbox.add(toga.Label(_('Page')))
+        self.page_indicator = toga.TextInput(value='1')
+        self.toolbox.add(self.page_indicator)
+        self.total_pages = toga.Label(f'{_('of')} {len(self.document)}')
+        self.toolbox.add(self.total_pages)
+
+        # Add to content box
+        self.content.add(self.toolbox)
         self.content.add(self.scroll)
 
-        self.document = pymupdf.open(self.file_path)
+        # Display document
         self.place_pages()
         self.task = asyncio.create_task(self.display_pages())
         # self.task.add_done_callback(lambda *args, **kwargs: print(f"Done displaying pages from {self.file_path.name}"))
+
+        # Add binding
+        self.scroll.on_scroll = self.update_current_page
+        self.page_indicator.on_confirm = self.go_to_page
 
     def place_pages(self):
         for p in range(self.document.page_count):
@@ -198,3 +227,46 @@ class DocumentTab(toga.OptionItem):
         
         # self.scroll.horizontal_position = self.current_scroll[0]
         # self.scroll.vertical_position = self.current_scroll[1]
+
+    def center_page(self):
+        percent_position:float = self.scroll.vertical_position / self.scroll.max_vertical_position
+        center:float = self.scroll.vertical_position + (0.5 - percent_position) * self.scroll.layout.height
+        print(f'center: {center}; maximum: {self.scroll.max_vertical_position}, height: {self.scroll.layout.height}')
+        
+        top = 0
+        for p in range(self.document.page_count):
+            print(f'page {p} top: {top}; height: {self.pages[p].image_view.layout.height}')
+            if top >= center:
+                return p - 1
+            top += self.pages[p].image_view.layout.height
+        return self.document.page_count - 1
+    
+    def update_current_page(self, widget, **kwars):
+        if self.changing_pos:
+            self.changing_pos = False
+            return
+        
+        n:int = self.center_page()
+        self.page_indicator.value = n + 1
+    
+    def go_to_page(self, widget, **kwargs):
+        try:
+            page_number = int(widget.value)
+            if page_number > len(self.document): page_number = len(self.document)
+        except (AttributeError, ValueError):
+            page_number = len(self.document)
+            page_number = str(len(self.document))
+        
+        self.changing_pos = True
+
+        print(f'page {page_number}')
+        
+        top = 0
+        for p in range(page_number - 1):
+            top += self.pages[p].image_view.layout.height + 2 * self.margin
+        if page_number > 1:
+            top += self.margin
+
+        print(f'top: {top}; percent: {top / self.scroll_content.layout.height}; layout height: {self.scroll_content.layout.height}; position: {top / self.scroll.layout.height * self.scroll.max_vertical_position}; max position: {self.scroll.max_vertical_position}')
+
+        self.scroll.vertical_position = top / (self.scroll_content.layout.height - self.scroll.layout.height) * self.scroll.max_vertical_position
