@@ -1,0 +1,1 @@
+pybabel.exe extract -o src/meupdf/resources/locale/meupdf.po --project="Meu PDF" --copyright-holder="Leandro Arndt" src/meupdf

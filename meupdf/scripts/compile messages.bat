@@ -1,0 +1,1 @@
+pybabel.exe compile -D meupdf -d src/meupdf/resources/locale

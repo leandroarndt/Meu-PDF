@@ -1,0 +1,1 @@
+pybabel.exe update -D meupdf -d src/meupdf/resources/locale -i src/meupdf/resources/locale/meupdf.po
