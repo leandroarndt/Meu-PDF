@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meu PDF 0.0.1\n"
 "Report-Msgid-Bugs-To: meupdf@visaocatolica.com.br\n"
-"POT-Creation-Date: 2025-09-09 22:52-0300\n"
+"POT-Creation-Date: 2025-09-10 08:06-0300\n"
 "PO-Revision-Date: 2025-09-09 22:54-0300\n"
 "Last-Translator: LEANDRO ARNDT <meupdf@visaocatolica.com.br>\n"
 "Language: pt\n"
@@ -18,11 +18,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/meupdf/app.py:36
+#: src/meupdf/app.py:30
 msgid "Welcome"
 msgstr "Bem-vindo"
 
-#: src/meupdf/app.py:36
+#: src/meupdf/app.py:30
 msgid "Welcome to Meu PDF"
 msgstr "Bem-vindo ao Meu PDF"
+
+#: src/meupdf/interface/merge.py:44
+msgid "Add document"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:45
+msgid "Cancel"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:46
+msgid "Merge!"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:55
+msgid "Select PDF files to merge"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:75
+msgid "Chose destination file"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:76
+msgid "merged.pdf"
+msgstr ""
 
