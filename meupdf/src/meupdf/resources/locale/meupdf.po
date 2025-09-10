@@ -1,14 +1,14 @@
 # Translations template for Meu PDF.
 # Copyright (C) 2025 Leandro Arndt
 # This file is distributed under the same license as the Meu PDF project.
-# LEANDRO ARNDT <meupdf.locale@visaocatolica.com.br>, 2025.
+# Leandro Arndt <meupdf.locale@visaocatolica.com.br>, 2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Meu PDF 0.0.1\n"
+"Project-Id-Version: Meu PDF VERSION\n"
 "Report-Msgid-Bugs-To: meupdf.locale@visaocatolica.com.br\n"
-"POT-Creation-Date: 2025-09-10 08:06-0300\n"
+"POT-Creation-Date: 2025-09-10 08:14-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,6 +23,26 @@ msgstr ""
 
 #: src/meupdf/app.py:30
 msgid "Welcome to Meu PDF"
+msgstr ""
+
+#: src/meupdf/app.py:41
+msgid "Open"
+msgstr ""
+
+#: src/meupdf/app.py:42
+msgid "Open a PDF file"
+msgstr ""
+
+#: src/meupdf/app.py:48
+msgid "Merge"
+msgstr ""
+
+#: src/meupdf/app.py:49
+msgid "Merge two or more PDF documents"
+msgstr ""
+
+#: src/meupdf/app.py:59
+msgid "Open PDF file"
 msgstr ""
 
 #: src/meupdf/interface/merge.py:44

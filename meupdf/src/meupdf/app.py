@@ -38,15 +38,15 @@ class MeuPDF(toga.App):
         self.main_window.toolbar.add(
             toga.Command(
                 self.open_dialog,
-                text='Open',
-                tooltip='Open a PDF file',
+                text=_('Open'),
+                tooltip=_('Open a PDF file'),
                 order=0,
                 group=toga.Group.FILE
             ),
             toga.Command(
                 self.open_merge_window,
-                text='Merge documents',
-                tooltip='Merge two or more PDF documents',
+                text=_('Merge'),
+                tooltip=_('Merge two or more PDF documents'),
                 order=1,
                 group=toga.Group.FILE
             ),
@@ -56,7 +56,7 @@ class MeuPDF(toga.App):
         self.main_window.show()
 
     def open_dialog(self, widget):
-        dialog = toga.OpenFileDialog('Open PDF file', file_types=['PDF'])
+        dialog = toga.OpenFileDialog(_('Open PDF file'), file_types=['PDF'])
         
         task = asyncio.create_task(self.main_window.dialog(dialog))
         task.add_done_callback(self.open_dialog_closed)
