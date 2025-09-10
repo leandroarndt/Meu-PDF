@@ -41,9 +41,9 @@ class MergeWindow(toga.Window):
         flex_column_right = pack.Pack(flex=1, direction=toga.constants.COLUMN, align_items=toga.constants.END)
         right_align = pack.Pack(flex=0, direction=toga.constants.ROW, align_items=toga.constants.END)
         self.content = toga.Box(style=flex_column_right)
-        self.add_button = toga.Button('Add document', enabled=False, on_press=self.open_dialog)
-        self.cancel_button = toga.Button('Cancel', enabled=False, on_press=self.do_close)
-        self.merge_button = toga.Button('Merge!', enabled=False, on_press=self.save_file_dialog)
+        self.add_button = toga.Button(_('Add document'), enabled=False, on_press=self.open_dialog)
+        self.cancel_button = toga.Button(_('Cancel'), enabled=False, on_press=self.do_close)
+        self.merge_button = toga.Button(_('Merge!'), enabled=False, on_press=self.save_file_dialog)
         top_button_row = toga.Box(style=right_align)
         bottom_button_row = toga.Box(style=right_align)
         self.scroll = toga.Box(style=pack.Pack(flex=1, direction=pack.COLUMN))
@@ -52,7 +52,7 @@ class MergeWindow(toga.Window):
         self.content.add(top_button_row, self.scroll, bottom_button_row)
 
     def open_dialog(self, widget, first_selection=False):
-        dialog = toga.OpenFileDialog('Select PDF files to merge', file_types=['PDF'], multiple_select=True)
+        dialog = toga.OpenFileDialog(_('Select PDF files to merge'), file_types=['PDF'], multiple_select=True)
         
         task = asyncio.create_task(self.dialog(dialog))
         task.add_done_callback(self.open_dialog_closed)
@@ -72,8 +72,8 @@ class MergeWindow(toga.Window):
 
     def save_file_dialog(self, widget):
         dialog = toga.SaveFileDialog(
-            'Chose destination file',
-            f'{self.documents[0].path.stem} - merged.pdf',
+            _('Chose destination file'),
+            f'{self.documents[0].path.stem} - {_("merged.pdf")}',
             file_types=['PDF'],
         )
         task = asyncio.create_task(self.dialog(dialog))
@@ -109,4 +109,3 @@ class MergeWindow(toga.Window):
     def do_close(self, *args, **kwargs):
         self.prepare_to_close(self)
         self.close()
-
