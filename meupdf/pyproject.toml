@@ -42,6 +42,7 @@ requires = [
     # isn't available on Debian 12/Ubuntu 22.04. If you don't need to support those (or
     # older) releases, you can remove this version pin. See beeware/toga#3143.
     "pygobject < 3.52.1",
+    "pymupdf",
 ]
 
 [tool.briefcase.app.meupdf.linux.system.debian]
@@ -164,6 +165,7 @@ flatpak_sdk = "org.gnome.Sdk"
 [tool.briefcase.app.meupdf.windows]
 requires = [
     "toga-winforms~=0.5.0",
+    "pymupdf",
 ]
 
 # Mobile deployments
