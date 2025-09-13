@@ -6,7 +6,14 @@ try:
 except ImportError:
     import pypdf
 
-from meupdf.documents.generic import GenericPage, GenericDocument, DocumentFormats
+from meupdf.documents.generic import GenericPage, GenericDocument, DocumentFormats, FormatInfos, document_formats
+
+DOCUMENT_FORMAT = 'PDF'
+
+document_formats[DOCUMENT_FORMAT] = {
+        FormatInfos.FULL_NAME: _('Portable Document File'),
+        FormatInfos.SHORT_NAME: _('PDF document'),
+    }
 
 class PDFPage(GenericPage):
     def __init__(self, document, number):
@@ -21,7 +28,7 @@ class PDFPage(GenericPage):
 
 class PDFDocument(GenericDocument):
     pages:list[PDFPage]
-    format:str = DocumentFormats.PDF
+    format:str = DOCUMENT_FORMAT
 
     def __init__(self, file_path):
         super().__init__(format=PDFDocument.format)
@@ -36,9 +43,9 @@ class PDFDocument(GenericDocument):
         else:
             self._document = pypdf.PdfReader(file_path)
             self.page_count = self._document.get_num_pages()
-            pages = []
+            self.pages = []
             for p in range(self.page_count):
-                pages.append(PDFPage(self, p))
+                self.pages.append(PDFPage(self, p))
 
     def merge(self, other):
         if 'pymupdf' in sys.modules:

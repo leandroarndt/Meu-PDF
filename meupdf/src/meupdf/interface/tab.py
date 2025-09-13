@@ -1,5 +1,5 @@
 import toga
-import pymupdf, io, json, logging, asyncio
+import io, json, logging, asyncio
 
 from collections import OrderedDict
 from pathlib import Path
@@ -8,6 +8,17 @@ import toga.constants
 from toga.style import pack
 import toga.style
 import toga.widgets
+
+try:
+    import pymupdf
+except ModuleNotFoundError:
+    class pymupdf(object):
+        class Matrix(object):
+            pass
+        class Document(object):
+            pass
+        class Page(object):
+            pass
 
 logger = logging.getLogger(__name__)
 

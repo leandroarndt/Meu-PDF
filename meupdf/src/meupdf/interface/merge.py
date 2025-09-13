@@ -4,7 +4,7 @@ from pathlib import Path
 import toga.constants
 from toga.style import pack
 
-from meupdf.documents.pdf import PDFDocument
+from meupdf.documents.pdf import PDFDocument, document_formats, FormatInfos
 
 class FileRow(toga.Box):
     # Miniature | file name | up | down
@@ -20,6 +20,7 @@ class FileRow(toga.Box):
 
         super().__init__(*args, **kwargs)
 
+        # First page miniature
         try:
             pix = self.document.pages[0].to_image()
             img_data = pix.tobytes(output='png')
@@ -28,6 +29,12 @@ class FileRow(toga.Box):
             self.add(self.miniature)
         except NotImplementedError:
             pass
+
+        # File info
+        label = toga.Label(text=str(self.document.file_path.stem) + \
+                f' ({document_formats[PDFDocument.format][FormatInfos.SHORT_NAME]})\n' + _\
+                ('At ') + str(self.document.file_path.parent))
+        self.add(label)
             
 class MergeWindow(toga.Window):
     documents:list[FileRow]

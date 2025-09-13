@@ -1,20 +1,23 @@
 from enum import StrEnum
 from pathlib import Path
 
-class DocumentFormats(StrEnum):
-    PDF = 'PDF'
+# class DocumentFormats(StrEnum):
+#     PDF = 'PDF'
 
 class FormatInfos(StrEnum):
     FULL_NAME = 'full name'
     SHORT_NAME = 'short name'
     # CAPABILITIES = 'capabilities' # Not used right now
 
-document_formats = {
-    DocumentFormats.PDF: {
-        FormatInfos.FULL_NAME: _('Portable Document File'),
-        FormatInfos.SHORT_NAME: _('PDF document'),
-    },
-}
+class DocumentFormats(object):
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = {}
+        return cls._instance
+
+document_formats = DocumentFormats()
 
 class GenericDocument(object):
     format:DocumentFormats
