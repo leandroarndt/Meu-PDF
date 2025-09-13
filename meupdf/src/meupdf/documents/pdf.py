@@ -39,3 +39,23 @@ class PDFDocument(GenericDocument):
             pages = []
             for p in range(self.page_count):
                 pages.append(PDFPage(self, p))
+
+    def merge(self, other):
+        if 'pymupdf' in sys.modules:
+            toc = self._document.get_toc(False)
+            toc2 = other._document.get_toc(False)
+            self._document.insert_pdf(other._document)
+            for t in toc2:
+                t[2] += self.page_count
+            self.page_count += len(other._document)
+            toc = toc + toc2
+            self._document.set_toc(toc)
+        else:
+            raise NotImplementedError('PDF merge not implemented without pymupdf yet.')
+
+    def save(self, new_path:Path|str|None=None):
+        if new_path:
+            self.file_path = Path(new_path)
+        if 'pymupdf' in sys.modules:
+            self._document.save(self.file_path)
+

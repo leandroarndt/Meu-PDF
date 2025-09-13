@@ -26,7 +26,10 @@ class GenericDocument(object):
     def __init__(self, format):
         self.format = format
         self.format_info = document_formats[format]
-    
+
+    def close(self):
+        pass # Fail silently, since it must be closed anyway when the object is destroyed
+
     def merge(self, other):
         raise NotImplementedError(f'Merging not implemented for {self.format} documents.')
 
@@ -41,5 +44,5 @@ class GenericPage(object):
         self._document, self.number = document, number
 
     def to_image(self, zoom:int=1, rotation:int=0):
-        return NotImplementedError(f'Conversion to image not implemented for pages of {self._document.format} documents.')
+        raise NotImplementedError(f'Conversion to image not implemented for pages of {self._document.format} documents.')
 
