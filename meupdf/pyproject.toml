@@ -21,11 +21,10 @@ test_sources = [
 ]
 
 requires = [
-    "pymupdf",
 ]
+
 test_requires = [
     "pytest",
-    "pymupdf",
 ]
 
 [tool.briefcase.app.meupdf.macOS]
@@ -173,11 +172,13 @@ requires = [
 requires = [
     "toga-iOS~=0.5.0",
     "std-nslog~=1.0.3",
+    "pypdf"
 ]
 
 [tool.briefcase.app.meupdf.android]
 requires = [
     "toga-android~=0.5.0",
+    "pypdf",
 ]
 
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
