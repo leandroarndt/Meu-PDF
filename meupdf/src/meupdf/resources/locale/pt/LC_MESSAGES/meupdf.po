@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meu PDF 0.0.1\n"
 "Report-Msgid-Bugs-To: meupdf@visaocatolica.com.br\n"
-"POT-Creation-Date: 2025-09-10 08:14-0300\n"
+"POT-Creation-Date: 2025-09-13 14:26-0300\n"
 "PO-Revision-Date: 2025-09-09 22:54-0300\n"
 "Last-Translator: LEANDRO ARNDT <meupdf@visaocatolica.com.br>\n"
 "Language: pt\n"
@@ -18,58 +18,77 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/meupdf/app.py:30
+#: src/meupdf/app.py:29
 msgid "Welcome"
 msgstr "Bem-vindo"
 
-#: src/meupdf/app.py:30
+#: src/meupdf/app.py:29
 msgid "Welcome to Meu PDF"
 msgstr "Bem-vindo ao Meu PDF"
 
-#: src/meupdf/app.py:41
+#: src/meupdf/app.py:40
 msgid "Open"
 msgstr "Abrir"
 
-#: src/meupdf/app.py:42
+#: src/meupdf/app.py:43
 msgid "Open a PDF file"
 msgstr "Abra um arquivo PDF"
 
-#: src/meupdf/app.py:48
-#, fuzzy
+#: src/meupdf/app.py:49
 msgid "Merge"
 msgstr "Juntar"
 
-#: src/meupdf/app.py:49
+#: src/meupdf/app.py:52
 msgid "Merge two or more PDF documents"
 msgstr "Junte dois ou mais documentos PDF"
 
-#: src/meupdf/app.py:59
+#: src/meupdf/app.py:62
 msgid "Open PDF file"
 msgstr "Abra um arquivo PDF"
 
-#: src/meupdf/interface/merge.py:44
+#: src/meupdf/documents/pdf.py:14
+msgid "Portable Document File"
+msgstr "Portable Document File"
+
+#: src/meupdf/documents/pdf.py:15
+msgid "PDF document"
+msgstr "documento PDF"
+
+#: src/meupdf/interface/merge.py:36
+msgid "At "
+msgstr "Em "
+
+#: src/meupdf/interface/merge.py:55
 msgid "Add document"
 msgstr "Acrescentar documento"
 
-#: src/meupdf/interface/merge.py:45
+#: src/meupdf/interface/merge.py:56
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/meupdf/interface/merge.py:46
+#: src/meupdf/interface/merge.py:57
 msgid "Merge!"
 msgstr "Juntar!"
 
-#: src/meupdf/interface/merge.py:55
+#: src/meupdf/interface/merge.py:66
 msgid "Select PDF files to merge"
 msgstr "Selecione arquivos PDF para juntar"
 
-#: src/meupdf/interface/merge.py:75
+#: src/meupdf/interface/merge.py:86
 msgid "Chose destination file"
 msgstr "Escolha o arquivo de destino"
 
-#: src/meupdf/interface/merge.py:76
+#: src/meupdf/interface/merge.py:87
 msgid "merged.pdf"
 msgstr "compilado.pdf"
+
+#: src/meupdf/interface/tab.py:169
+msgid "Page"
+msgstr "Página"
+
+#: src/meupdf/interface/tab.py:172
+msgid "of"
+msgstr "de"
 
 #~ msgid "Merge documents"
 #~ msgstr "Juntar documentos"

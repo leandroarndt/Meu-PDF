@@ -6,7 +6,14 @@ try:
 except ImportError:
     import pypdf
 
-from meupdf.documents.generic import GenericPage, GenericDocument, DocumentFormats
+from meupdf.documents.generic import GenericPage, GenericDocument, DocumentFormats, FormatInfos, document_formats
+
+DOCUMENT_FORMAT = 'PDF'
+
+document_formats[DOCUMENT_FORMAT] = {
+        FormatInfos.FULL_NAME: _('Portable Document File'),
+        FormatInfos.SHORT_NAME: _('PDF document'),
+    }
 
 class PDFPage(GenericPage):
     def __init__(self, document, number):
@@ -21,7 +28,7 @@ class PDFPage(GenericPage):
 
 class PDFDocument(GenericDocument):
     pages:list[PDFPage]
-    format:str = DocumentFormats.PDF
+    format:str = DOCUMENT_FORMAT
 
     def __init__(self, file_path):
         super().__init__(format=PDFDocument.format)
@@ -36,6 +43,26 @@ class PDFDocument(GenericDocument):
         else:
             self._document = pypdf.PdfReader(file_path)
             self.page_count = self._document.get_num_pages()
-            pages = []
+            self.pages = []
             for p in range(self.page_count):
-                pages.append(PDFPage(self, p))
+                self.pages.append(PDFPage(self, p))
+
+    def merge(self, other):
+        if 'pymupdf' in sys.modules:
+            toc = self._document.get_toc(False)
+            toc2 = other._document.get_toc(False)
+            self._document.insert_pdf(other._document)
+            for t in toc2:
+                t[2] += self.page_count
+            self.page_count += len(other._document)
+            toc = toc + toc2
+            self._document.set_toc(toc)
+        else:
+            raise NotImplementedError('PDF merge not implemented without pymupdf yet.')
+
+    def save(self, new_path:Path|str|None=None):
+        if new_path:
+            self.file_path = Path(new_path)
+        if 'pymupdf' in sys.modules:
+            self._document.save(self.file_path)
+
