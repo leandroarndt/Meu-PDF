@@ -1,12 +1,14 @@
-import toga, pymupdf, asyncio
+import toga, asyncio
 
 from pathlib import Path
 import toga.constants
 from toga.style import pack
 
+from meupdf.documents.pdf import PDFDocument, document_formats, FormatInfos
+
 class FileRow(toga.Box):
     # Miniature | file name | up | down
-    document:pymupdf.Document
+    document:PDFDocument
     path:Path
     miniature:toga.ImageView
     up_button:toga.Button
@@ -14,17 +16,26 @@ class FileRow(toga.Box):
 
     def __init__(self, file_path:str, *args, **kwargs):
         self.path = Path(file_path)
-        self.document = pymupdf.open(self.path)
+        self.document = PDFDocument(self.path)
 
         super().__init__(*args, **kwargs)
 
-        pix = self.document[0].get_pixmap(matrix=pymupdf.Matrix(0.1, 0.1))
-        img_data = pix.tobytes(output='png')
-        image = toga.Image(src=img_data)
-        self.miniature = toga.ImageView(image, style=pack.Pack(height=100))
+        # First page miniature
+        try:
+            pix = self.document.pages[0].to_image()
+            img_data = pix.tobytes(output='png')
+            image = toga.Image(src=img_data)
+            self.miniature = toga.ImageView(image, style=pack.Pack(height=100))
+            self.add(self.miniature)
+        except NotImplementedError:
+            pass
 
-        self.add(self.miniature)
-
+        # File info
+        label = toga.Label(text=str(self.document.file_path.stem) + \
+                f' ({document_formats[PDFDocument.format][FormatInfos.SHORT_NAME]})\n' + _\
+                ('At ') + str(self.document.file_path.parent))
+        self.add(label)
+            
 class MergeWindow(toga.Window):
     documents:list[FileRow]
     add_button:toga.Button
@@ -90,19 +101,22 @@ class MergeWindow(toga.Window):
         return True
     
     def merge(self, file:str):
-        try:
-            page_num = len(self.documents[0].document)
-            toc = self.documents[0].document.get_toc(False)
-            for doc in self.documents[1:]:
-                toc2 = doc.document.get_toc(False)
-                self.documents[0].document.insert_pdf(doc.document)
-                for t in toc2:
-                    t[2] += page_num
-                page_num += len(doc.document)
-                toc = toc + toc2
-            self.documents[0].document.set_toc(toc)
-        except IndexError:
-            pass
+        # try:
+        #     page_num = len(self.documents[0].document)
+        #     toc = self.documents[0].document.get_toc(False)
+        #     for doc in self.documents[1:]:
+        #         toc2 = doc.document.get_toc(False)
+        #         self.documents[0].document.insert_pdf(doc.document)
+        #         for t in toc2:
+        #             t[2] += page_num
+        #         page_num += len(doc.document)
+        #         toc = toc + toc2
+        #     self.documents[0].document.set_toc(toc)
+        # except IndexError:
+        #     pass
+        print(self.documents)
+        for d in range(1, len(self.documents)):
+            self.documents[0].document.merge(self.documents[d].document)
         self.documents[0].document.save(file)
         self.do_close()
 

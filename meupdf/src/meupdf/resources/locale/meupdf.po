@@ -1,14 +1,14 @@
 # Translations template for Meu PDF.
 # Copyright (C) 2025 Leandro Arndt
 # This file is distributed under the same license as the Meu PDF project.
-# Leandro Arndt <meupdf.locale@visaocatolica.com.br>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Meu PDF VERSION\n"
 "Report-Msgid-Bugs-To: meupdf.locale@visaocatolica.com.br\n"
-"POT-Creation-Date: 2025-09-10 08:14-0300\n"
+"POT-Creation-Date: 2025-09-13 14:26-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,55 +17,75 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/meupdf/app.py:30
+#: src/meupdf/app.py:29
 msgid "Welcome"
 msgstr ""
 
-#: src/meupdf/app.py:30
+#: src/meupdf/app.py:29
 msgid "Welcome to Meu PDF"
 msgstr ""
 
-#: src/meupdf/app.py:41
+#: src/meupdf/app.py:40
 msgid "Open"
 msgstr ""
 
-#: src/meupdf/app.py:42
+#: src/meupdf/app.py:43
 msgid "Open a PDF file"
 msgstr ""
 
-#: src/meupdf/app.py:48
+#: src/meupdf/app.py:49
 msgid "Merge"
 msgstr ""
 
-#: src/meupdf/app.py:49
+#: src/meupdf/app.py:52
 msgid "Merge two or more PDF documents"
 msgstr ""
 
-#: src/meupdf/app.py:59
+#: src/meupdf/app.py:62
 msgid "Open PDF file"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:44
-msgid "Add document"
+#: src/meupdf/documents/pdf.py:14
+msgid "Portable Document File"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:45
-msgid "Cancel"
+#: src/meupdf/documents/pdf.py:15
+msgid "PDF document"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:46
-msgid "Merge!"
+#: src/meupdf/interface/merge.py:36
+msgid "At "
 msgstr ""
 
 #: src/meupdf/interface/merge.py:55
+msgid "Add document"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:56
+msgid "Cancel"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:57
+msgid "Merge!"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:66
 msgid "Select PDF files to merge"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:75
+#: src/meupdf/interface/merge.py:86
 msgid "Chose destination file"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:76
+#: src/meupdf/interface/merge.py:87
 msgid "merged.pdf"
+msgstr ""
+
+#: src/meupdf/interface/tab.py:169
+msgid "Page"
+msgstr ""
+
+#: src/meupdf/interface/tab.py:172
+msgid "of"
 msgstr ""
 
