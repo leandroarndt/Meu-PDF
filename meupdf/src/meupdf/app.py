@@ -1,11 +1,11 @@
 """
 Free Open Source PDF viewer and editor
 """
-import threading, shutil, os, socket
+import threading, shutil, socket, zipfile
 from pathlib import Path
 
-import toga, asyncio, sys
-from toga.style.pack import COLUMN, ROW, Pack
+import toga, asyncio
+from toga.style.pack import Pack
 
 from meupdf.interface.viewserver import start_httpd
 from meupdf.interface.tab import DocumentTab
@@ -20,7 +20,6 @@ class MeuPDF(toga.App):
     files_uri:Path = Path('files')
     host:str = 'localhost'
     port:int = 8000
-    # server:ViewServer
     server_thread:threading.Thread
 
     def find_port(self, bottom=8000, top=9000):
@@ -36,8 +35,6 @@ class MeuPDF(toga.App):
         raise OSError(f'No available port from {bottom} to {top-1}')
     
     def start_server(self):
-        # self.server = ViewServer(self.server_dir, self.host, self.port)
-        # self.server.serve()
         start_httpd(self.server_dir, self.host, self.port)
 
     def startup(self):
@@ -45,13 +42,14 @@ class MeuPDF(toga.App):
         self.server_dir = self.paths.cache / 'viewserver'
         print(f'Server dir at {self.server_dir}')
         (self.server_dir / self.files_uri).mkdir(parents=True, exist_ok=True)
-        shutil.copytree(self.paths.app / 'resources/viewserver', self.server_dir, dirs_exist_ok=True)
+        # shutil.copytree(self.paths.app / 'resources/viewserver', self.server_dir, dirs_exist_ok=True)
+        server_files = zipfile.ZipFile(self.paths.app / 'resources/viewserver/pdfjs-5.4.149-dist.zip')
+        server_files.extractall(self.server_dir)
         self.port = self.find_port()
         self.server_thread = threading.Thread(target=self.start_server)
         self.server_thread.start()
 
-        # toga.Button('Open', on_press=self.open_dialog)# tab_area.content.append(DocumentTab(toga.OpenFileDialog('Open PDF file', file_types='*.pdf'))))
-
+        # Prepare interface
         self.main_box = toga.Box()
         self.tab_area = toga.OptionContainer(style=Pack(flex=1), content=[
             toga.OptionItem(text=_('Welcome'), content=toga.Label(_('Welcome to Meu PDF'))),
@@ -104,7 +102,7 @@ class MeuPDF(toga.App):
         merge_window.show()
         merge_window.open_dialog(widget, first_selection=True)
     
-    def on_close(self, window, **kwargs):
+    def on_exit(self, **kwargs):
         # Delete server cache
         files = self.server_dir.glob('**', recurse_symlinks=False)
         for f in files:
