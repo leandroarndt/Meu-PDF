@@ -1,7 +1,7 @@
 """
 Free Open Source PDF viewer and editor
 """
-import threading, shutil, socket, zipfile
+import threading, sys, socket, zipfile
 from pathlib import Path
 
 import toga, asyncio
@@ -21,8 +21,9 @@ class MeuPDF(toga.App):
     host:str = 'localhost'
     port:int = 8000
     server_thread:threading.Thread
+    binded_to_port:bool = False
 
-    def find_port(self, bottom=8000, top=9000):
+    def find_port(self, bottom=60000, top=61000):
         for port in range(bottom, top):
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -38,6 +39,15 @@ class MeuPDF(toga.App):
         start_httpd(self.server_dir, self.host, self.port)
 
     def startup(self):
+        # Prepare for non-console running
+        try:
+            sys.stderr.write('Welcome to Meu PDF!')
+        except AttributeError:
+            import os
+            sink = open(os.devnull, 'w')
+            sys.stderr = sink
+            sys.stdout = sink
+
         # Start view server
         self.server_dir = self.paths.cache / 'viewserver'
         print(f'Server dir at {self.server_dir}')
@@ -45,7 +55,11 @@ class MeuPDF(toga.App):
         # shutil.copytree(self.paths.app / 'resources/viewserver', self.server_dir, dirs_exist_ok=True)
         server_files = zipfile.ZipFile(self.paths.app / 'resources/viewserver/pdfjs-5.4.149-dist.zip')
         server_files.extractall(self.server_dir)
-        self.port = self.find_port()
+        try:
+            self.port = self.find_port()
+            self.binded_to_port = True
+        except OSError:
+            self.binded_to_port = False
         self.server_thread = threading.Thread(target=self.start_server)
         self.server_thread.start()
 
@@ -64,7 +78,7 @@ class MeuPDF(toga.App):
             toga.Command(
                 self.open_dialog,
                 text=_('Open'),
-                icon='resources/icons/open.png',
+                icon=self.paths.app / 'resources/icons/open.png',
                 shortcut=toga.Key.MOD_1 + 'O',
                 tooltip=_('Open a PDF file'),
                 order=0,
@@ -74,7 +88,7 @@ class MeuPDF(toga.App):
                 self.open_merge_window,
                 text=_('Merge'),
                 shortcut=toga.Key.MOD_1 + 'M',
-                icon='resources/icons/merge.png',
+                icon=self.paths.app / 'resources/icons/merge.png',
                 tooltip=_('Merge two or more PDF documents'),
                 order=1,
                 group=toga.Group.FILE
@@ -96,6 +110,9 @@ class MeuPDF(toga.App):
             new_tab = DocumentTab(file, self.server_dir, self.files_uri, self.host, self.port)
             self.tab_area.content.append(new_tab)
             self.tab_area.current_tab = new_tab
+        if not self.binded_to_port:
+            dialog = toga.ErrorDialog(_('Network error!'), _('It was not possible to bind to a network port. Document contents will not be displayed.'))
+            task = asyncio.create_task(self.main_window.dialog(dialog))
     
     def open_merge_window(self, widget):
         merge_window = MergeWindow()
@@ -104,7 +121,7 @@ class MeuPDF(toga.App):
     
     def on_exit(self, **kwargs):
         # Delete server cache
-        files = self.server_dir.glob('**', recurse_symlinks=False)
+        files = (self.server_dir / self.files_uri).glob('**', recurse_symlinks=False)
         for f in files:
             try:
                 if f.is_file():
