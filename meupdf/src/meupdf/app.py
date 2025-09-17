@@ -67,7 +67,7 @@ class MeuPDF(toga.App):
         self.main_box = toga.Box()
         self.tab_area = toga.OptionContainer(style=Pack(flex=1), content=[
             toga.OptionItem(text=_('Welcome'), content=toga.Label(_('Welcome to Meu PDF'))),
-        ])
+        ], on_select=self.on_select_tab)
 
         self.main_box.add(self.tab_area)
 
@@ -93,12 +93,23 @@ class MeuPDF(toga.App):
                 order=1,
                 group=toga.Group.FILE
             ),
+            toga.Command(
+                self.close_tab,
+                text=_('Close'),
+                shortcut=toga.Key.MOD_1 + 'W',
+                #icon,
+                tooltip=_('Close current tab'),
+                order=2,
+                group=toga.Group.FILE,
+                enabled=False,
+                id='close_tab',
+            ),
         )
 
         self.main_window.content = self.main_box
         self.main_window.show()
 
-    def open_dialog(self, widget):
+    def open_dialog(self, widget, **kwargs):
         dialog = toga.OpenFileDialog(_('Open PDF file'), file_types=['PDF'])
         
         task = asyncio.create_task(self.main_window.dialog(dialog))
@@ -114,11 +125,31 @@ class MeuPDF(toga.App):
             dialog = toga.ErrorDialog(_('Network error!'), _('It was not possible to bind to a network port. Document contents will not be displayed.'))
             task = asyncio.create_task(self.main_window.dialog(dialog))
     
-    def open_merge_window(self, widget):
+    def open_merge_window(self, widget, **kwargs):
         merge_window = MergeWindow()
         merge_window.show()
         merge_window.open_dialog(widget, first_selection=True)
     
+    def on_select_tab(self, widget, **kwargs):
+        if self.tab_area.content.index(self.tab_area.current_tab) == 0:
+            self.commands['close_tab'].enabled = False
+        else:
+            self.commands['close_tab'].enabled = True
+
+    def close_tab(self, widget, **kwargs):
+        if self.tab_area.current_tab.index == 0: # Do not close welcome page
+            return
+        try:
+            tab = self.tab_area.current_tab
+            i = self.tab_area.content.index(tab)
+            if i == len(self.tab_area.content) - 1:
+                self.tab_area.current_tab = i - 1
+            else:
+                self.tab_area.current_tab = i + 1
+            self.tab_area.content.remove(tab)
+        except Exception as e:
+            print(e)
+
     def on_exit(self, **kwargs):
         # Delete server cache
         files = (self.server_dir / self.files_uri).glob('**', recurse_symlinks=False)
