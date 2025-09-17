@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meu PDF VERSION\n"
 "Report-Msgid-Bugs-To: meupdf.locale@visaocatolica.com.br\n"
-"POT-Creation-Date: 2025-09-13 14:26-0300\n"
+"POT-Creation-Date: 2025-09-17 10:34-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,75 +17,101 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/meupdf/app.py:29
+#: src/meupdf/app.py:69
 msgid "Welcome"
 msgstr ""
 
-#: src/meupdf/app.py:29
+#: src/meupdf/app.py:69
 msgid "Welcome to Meu PDF"
 msgstr ""
 
-#: src/meupdf/app.py:40
+#: src/meupdf/app.py:80
 msgid "Open"
 msgstr ""
 
-#: src/meupdf/app.py:43
+#: src/meupdf/app.py:83
 msgid "Open a PDF file"
 msgstr ""
 
-#: src/meupdf/app.py:49
+#: src/meupdf/app.py:89 src/meupdf/interface/merge.py:28
 msgid "Merge"
 msgstr ""
 
-#: src/meupdf/app.py:52
+#: src/meupdf/app.py:92
 msgid "Merge two or more PDF documents"
 msgstr ""
 
-#: src/meupdf/app.py:62
+#: src/meupdf/app.py:102
 msgid "Open PDF file"
 msgstr ""
 
-#: src/meupdf/documents/pdf.py:14
+#: src/meupdf/app.py:114
+msgid "Network error!"
+msgstr ""
+
+#: src/meupdf/app.py:114
+msgid ""
+"It was not possible to bind to a network port. Document contents will not"
+" be displayed."
+msgstr ""
+
+#: src/meupdf/documents/pdf.py:65
 msgid "Portable Document File"
 msgstr ""
 
-#: src/meupdf/documents/pdf.py:15
+#: src/meupdf/documents/pdf.py:66
 msgid "PDF document"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:36
+#: src/meupdf/interface/document_organizer.py:37
 msgid "At "
 msgstr ""
 
-#: src/meupdf/interface/merge.py:55
+#: src/meupdf/interface/document_organizer.py:41
+msgid "Up"
+msgstr ""
+
+#: src/meupdf/interface/document_organizer.py:42
+msgid "Down"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:26
 msgid "Add document"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:56
+#: src/meupdf/interface/merge.py:27
 msgid "Cancel"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:57
-msgid "Merge!"
-msgstr ""
-
-#: src/meupdf/interface/merge.py:66
+#: src/meupdf/interface/merge.py:38
 msgid "Select PDF files to merge"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:86
+#: src/meupdf/interface/merge.py:54
+msgid "File format error!"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:54
+msgid "file format"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:54
+msgid "is not supported"
+msgstr ""
+
+#: src/meupdf/interface/merge.py:64
 msgid "Chose destination file"
 msgstr ""
 
-#: src/meupdf/interface/merge.py:87
+#: src/meupdf/interface/merge.py:65
 msgid "merged.pdf"
 msgstr ""
 
-#: src/meupdf/interface/tab.py:169
+#: src/meupdf/interface/tab_old.py:163
 msgid "Page"
 msgstr ""
 
-#: src/meupdf/interface/tab.py:172
+#: src/meupdf/interface/tab_old.py:166
 msgid "of"
 msgstr ""
 
