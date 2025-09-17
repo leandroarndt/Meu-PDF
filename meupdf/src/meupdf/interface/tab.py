@@ -21,5 +21,5 @@ class DocumentTab(toga.OptionItem):
         self.server_dir, self.files_uri, self.host, self.port = server_dir, files_uri, host, port
         self.file_path = file_path
         self.document = PDFDocument(self.file_path)
-        shutil.copyfile(file_path, server_dir / files_uri / self.file_path.name )
-        self.view.url = f'http://{host}:{port}/web/viewer.html?file=/{files_uri}/{self.file_path.name}'
+        shutil.copyfile(file_path, server_dir / files_uri / self.document.hashed_path('.pdf'))
+        self.view.url = f'http://{host}:{port}/web/viewer.html?file=/{files_uri}/{self.document.hashed_path('.pdf')}'

@@ -24,13 +24,20 @@ document_formats = DocumentFormats()
 class GenericDocument(object):
     format:DocumentFormats
     format_info:dict
-    file_path:Path
+    file_path:Path = None
     pages:list
     page_count:int
 
     def __init__(self, format, *args, **kwargs):
         self.format = format
         self.format_info = document_formats[format]
+        if 'file_path' in kwargs:
+            self.hashed_path = str(hash(str(kwargs['file_path'])))
+
+    def hashed_path(self, suffix=''):
+        if 'file_path' is None:
+            raise ValueError(f'This {self.format_info[FormatInfos.FULL_NAME]} instance doesn\'t have a "file_path" value')
+        return str(hash(str(self.file_path))) + suffix
 
     def close(self):
         pass # Fail silently, since it must be closed anyway when the object is destroyed
