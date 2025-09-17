@@ -10,11 +10,6 @@ from meupdf.documents.generic import GenericPage, GenericDocument, DocumentForma
 
 DOCUMENT_FORMAT = 'PDF'
 
-document_formats[DOCUMENT_FORMAT] = {
-        FormatInfos.FULL_NAME: _('Portable Document File'),
-        FormatInfos.SHORT_NAME: _('PDF document'),
-    }
-
 class PDFPage(GenericPage):
     def __init__(self, document, number):
         super().__init__(document, number)
@@ -66,3 +61,9 @@ class PDFDocument(GenericDocument):
         if 'pymupdf' in sys.modules:
             self._document.save(self.file_path)
 
+document_formats[DOCUMENT_FORMAT] = {
+        FormatInfos.FULL_NAME: _('Portable Document File'),
+        FormatInfos.SHORT_NAME: _('PDF document'),
+        FormatInfos.EXTENSIONS: ['.pdf'],
+        FormatInfos.CLASS: PDFDocument,
+    }

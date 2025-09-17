@@ -4,48 +4,19 @@ from pathlib import Path
 import toga.constants
 from toga.style import pack
 
-from meupdf.documents.pdf import PDFDocument, document_formats, FormatInfos
-
-class FileRow(toga.Box):
-    # Miniature | file name | up | down
-    document:PDFDocument
-    path:Path
-    miniature:toga.ImageView
-    up_button:toga.Button
-    down_button:toga.Button
-
-    def __init__(self, file_path:str, *args, **kwargs):
-        self.path = Path(file_path)
-        self.document = PDFDocument(self.path)
-
-        super().__init__(*args, **kwargs)
-
-        # First page miniature
-        try:
-            pix = self.document.pages[0].to_image()
-            img_data = pix.tobytes(output='png')
-            image = toga.Image(src=img_data)
-            self.miniature = toga.ImageView(image, style=pack.Pack(height=100))
-            self.add(self.miniature)
-        except NotImplementedError:
-            pass
-
-        # File info
-        label = toga.Label(text=str(self.document.file_path.stem) + \
-                f' ({document_formats[PDFDocument.format][FormatInfos.SHORT_NAME]})\n' + _\
-                ('At ') + str(self.document.file_path.parent))
-        self.add(label)
+from meupdf.interface.document_organizer import FileRow
             
 class MergeWindow(toga.Window):
-    documents:list[FileRow]
+    # documents:list[FileRow]
     add_button:toga.Button
     scroll:toga.ScrollContainer
+    document_organizer:toga.Box
     rows:toga.Box
     cancel_button:toga.Button
     merge_button:toga.Button
 
     def __init__(self, *args, **kwargs):
-        self.documents = []
+        # self.documents = []
 
         super().__init__(self, on_close=self.prepare_to_close, *args, **kwargs)
 
@@ -54,10 +25,11 @@ class MergeWindow(toga.Window):
         self.content = toga.Box(style=flex_column_right)
         self.add_button = toga.Button(_('Add document'), enabled=False, on_press=self.open_dialog)
         self.cancel_button = toga.Button(_('Cancel'), enabled=False, on_press=self.do_close)
-        self.merge_button = toga.Button(_('Merge!'), enabled=False, on_press=self.save_file_dialog)
+        self.merge_button = toga.Button(_('Merge'), enabled=False, on_press=self.save_file_dialog)
         top_button_row = toga.Box(style=right_align)
         bottom_button_row = toga.Box(style=right_align)
-        self.scroll = toga.Box(style=pack.Pack(flex=1, direction=pack.COLUMN))
+        self.document_organizer = toga.Box(style=pack.Pack(flex=1, direction=pack.COLUMN, margin=5))
+        self.scroll = toga.ScrollContainer(vertical=True, horizontal=True, content=self.document_organizer, style=pack.Pack(flex=1))
         top_button_row.add(self.add_button)
         bottom_button_row.add(self.cancel_button, self.merge_button)
         self.content.add(top_button_row, self.scroll, bottom_button_row)
@@ -75,16 +47,22 @@ class MergeWindow(toga.Window):
         if not files:
             self.do_close()
         for f in files:
-            self.documents.append(FileRow(f))
-            self.scroll.add(self.documents[-1])
+            try:
+                # self.documents.append(FileRow(f, self.scroll))
+                self.document_organizer.add(FileRow(f, self.document_organizer))
+            except NotImplementedError:
+                dialog = toga.ErrorDialog(_('File format error!'), f'{_("file format").capitalize()} "{Path(f).suffix}" {_("is not supported")}.')
+                asyncio.create_task(self.dialog(dialog))
         self.add_button.enabled = True
         self.cancel_button.enabled = True
         self.merge_button.enabled = True
+        self.document_organizer.children[0].inhibit_buttons()
+        self.document_organizer.children[-1].inhibit_buttons()
 
     def save_file_dialog(self, widget):
         dialog = toga.SaveFileDialog(
             _('Chose destination file'),
-            f'{self.documents[0].path.stem} - {_("merged.pdf")}',
+            f'{self.document_organizer.children[0].document.file_path.stem} - {_("merged.pdf")}',
             file_types=['PDF'],
         )
         task = asyncio.create_task(self.dialog(dialog))
@@ -96,28 +74,14 @@ class MergeWindow(toga.Window):
             self.merge(file)
 
     def prepare_to_close(self, window, **kwargs):
-        for d in self.documents:
-            d.document.close()
+        for row in self.document_organizer.children:
+            row.document.close()
         return True
     
     def merge(self, file:str):
-        # try:
-        #     page_num = len(self.documents[0].document)
-        #     toc = self.documents[0].document.get_toc(False)
-        #     for doc in self.documents[1:]:
-        #         toc2 = doc.document.get_toc(False)
-        #         self.documents[0].document.insert_pdf(doc.document)
-        #         for t in toc2:
-        #             t[2] += page_num
-        #         page_num += len(doc.document)
-        #         toc = toc + toc2
-        #     self.documents[0].document.set_toc(toc)
-        # except IndexError:
-        #     pass
-        print(self.documents)
-        for d in range(1, len(self.documents)):
-            self.documents[0].document.merge(self.documents[d].document)
-        self.documents[0].document.save(file)
+        for r in range(1, len(self.document_organizer.children)):
+            self.document_organizer.children[0].document.merge(self.document_organizer.children[r].document)
+        self.document_organizer.children[0].document.save(file)
         self.do_close()
 
     def do_close(self, *args, **kwargs):

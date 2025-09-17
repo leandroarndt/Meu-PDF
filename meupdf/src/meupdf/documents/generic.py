@@ -7,6 +7,8 @@ from pathlib import Path
 class FormatInfos(StrEnum):
     FULL_NAME = 'full name'
     SHORT_NAME = 'short name'
+    EXTENSIONS = 'file extension'
+    CLASS = 'class'
     # CAPABILITIES = 'capabilities' # Not used right now
 
 class DocumentFormats(object):
@@ -26,7 +28,7 @@ class GenericDocument(object):
     pages:list
     page_count:int
 
-    def __init__(self, format):
+    def __init__(self, format, *args, **kwargs):
         self.format = format
         self.format_info = document_formats[format]
 
@@ -49,3 +51,11 @@ class GenericPage(object):
     def to_image(self, zoom:int=1, rotation:int=0):
         raise NotImplementedError(f'Conversion to image not implemented for pages of {self._document.format} documents.')
 
+def get_document_class(file_path:Path):
+    formats:dict = DocumentFormats()
+    file_path = Path(file_path) # ensures it's really a Path object
+    extension = file_path.suffix
+    for key, value in formats.items():
+        if extension.lower() in value[FormatInfos.EXTENSIONS]:
+            return value[FormatInfos.CLASS]
+    raise NotImplementedError(f'Files with "{extension}" extension cannot be handled')
