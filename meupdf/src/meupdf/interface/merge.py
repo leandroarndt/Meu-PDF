@@ -16,8 +16,6 @@ class MergeWindow(toga.Window):
     merge_button:toga.Button
 
     def __init__(self, *args, **kwargs):
-        # self.documents = []
-
         super().__init__(self, on_close=self.prepare_to_close, *args, **kwargs)
 
         flex_column_right = pack.Pack(flex=1, direction=toga.constants.COLUMN, align_items=toga.constants.END)
@@ -48,8 +46,7 @@ class MergeWindow(toga.Window):
             self.do_close()
         for f in files:
             try:
-                # self.documents.append(FileRow(f, self.scroll))
-                self.document_organizer.add(FileRow(f, self.document_organizer))
+                self.document_organizer.add(FileRow(f, self.document_organizer, style=pack.Pack(margin=5)))
             except NotImplementedError:
                 dialog = toga.ErrorDialog(_('File format error!'), f'{_("file format").capitalize()} "{Path(f).suffix}" {_("is not supported")}.')
                 asyncio.create_task(self.dialog(dialog))
