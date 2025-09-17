@@ -20,6 +20,22 @@ class PDFPage(GenericPage):
         else:
             self._page = document._document.get_page(number)
             self.width, self.height = self._page.trimbox.width, self._page.trimbox.right
+    
+    def to_image(self, width:int=None, height:int=None, zoom:float=1.0, rotation:int=0):
+        """Returns page image according to the given parameters in the following dimension
+        priority order:
+        width > height > zoom
+        Rotation must be given in degrees (rotation > 0 rotates right)
+        """
+        if 'pymupdf' in sys.modules:
+            if width:
+                zoom = width / (self._page.rect[2] - self._page.rect[0])
+            elif height:
+                zoom = height / (self._page.rect[3] - self._page.rect[1])
+            matrix = pymupdf.Matrix(zoom, zoom).prerotate(rotation)
+            return self._page.get_pixmap(matrix=matrix)
+        else:
+            raise NotImplementedError('PDF page images not implemented without pymupdf yet')
 
 class PDFDocument(GenericDocument):
     pages:list[PDFPage]
@@ -53,7 +69,7 @@ class PDFDocument(GenericDocument):
             toc = toc + toc2
             self._document.set_toc(toc)
         else:
-            raise NotImplementedError('PDF merge not implemented without pymupdf yet.')
+            raise NotImplementedError('PDF merge not implemented without pymupdf yet')
 
     def save(self, new_path:Path|str|None=None):
         if new_path:
