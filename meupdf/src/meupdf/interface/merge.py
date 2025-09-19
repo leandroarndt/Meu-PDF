@@ -5,6 +5,7 @@ import toga.constants
 from toga.style import pack
 
 from meupdf.interface.document_organizer import FileRow
+from meupdf.documents import pdf
             
 class MergeWindow(toga.Window):
     # documents:list[FileRow]
@@ -58,9 +59,9 @@ class MergeWindow(toga.Window):
 
     def save_file_dialog(self, widget):
         dialog = toga.SaveFileDialog(
-            _('Chose destination file'),
-            f'{self.document_organizer.children[0].document.file_path.stem} - {_("merged.pdf")}',
-            file_types=['PDF'],
+            _('Choose destination file'),
+            f'{self.document_organizer.children[0].document.file_path.stem} - {_("merged")}.{pdf.DOCUMENT_FORMAT}',
+            file_types=[pdf.DOCUMENT_FORMAT],
         )
         task = asyncio.create_task(self.dialog(dialog))
         task.add_done_callback(self.save_dialog_closed)

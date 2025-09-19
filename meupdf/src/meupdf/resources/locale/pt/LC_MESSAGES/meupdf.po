@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meu PDF 0.0.1\n"
 "Report-Msgid-Bugs-To: meupdf@visaocatolica.com.br\n"
-"POT-Creation-Date: 2025-09-18 18:49-0300\n"
+"POT-Creation-Date: 2025-09-19 20:18-0300\n"
 "PO-Revision-Date: 2025-09-09 22:54-0300\n"
 "Last-Translator: LEANDRO ARNDT <meupdf@visaocatolica.com.br>\n"
 "Language: pt\n"
@@ -18,35 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/meupdf/app.py:70
-msgid "Welcome"
-msgstr "Bem-vindo"
-
-#: src/meupdf/app.py:70
-msgid "Welcome to Meu PDF"
-msgstr "Bem-vindo ao Meu PDF"
-
-#: src/meupdf/app.py:89
-msgid "Open PDF file"
-msgstr "Abra um arquivo PDF"
-
-#: src/meupdf/app.py:101
-msgid "Network error!"
-msgstr "Erro de rede!"
-
-#: src/meupdf/app.py:101
-msgid ""
-"It was not possible to bind to a network port. Document contents will not"
-" be displayed."
-msgstr ""
-"Não foi possível conectar-se a uma porta de rede. Documentos não serão "
-"exibidos."
-
-#: src/meupdf/documents/pdf.py:81
+#: src/meupdf/documents/pdf.py:87
 msgid "Portable Document File"
 msgstr "Portable Document File"
 
-#: src/meupdf/documents/pdf.py:82
+#: src/meupdf/documents/pdf.py:88
 msgid "PDF document"
 msgstr "documento PDF"
 
@@ -70,35 +46,39 @@ msgstr "Ajuda"
 msgid "Open recent"
 msgstr "Abrir recente"
 
-#: src/meupdf/interface/commands.py:47
+#: src/meupdf/interface/commands.py:49
 msgid "Open"
 msgstr "Abrir"
 
-#: src/meupdf/interface/commands.py:50
+#: src/meupdf/interface/commands.py:52
 msgid "Open a PDF file"
 msgstr "Abra um arquivo PDF"
 
-#: src/meupdf/interface/commands.py:56
+#: src/meupdf/interface/commands.py:58 src/meupdf/interface/commands.py:60
+msgid "Extract current page"
+msgstr "Extrair página atual"
+
+#: src/meupdf/interface/commands.py:67
 msgid "Close"
 msgstr "Fechar"
 
-#: src/meupdf/interface/commands.py:59
+#: src/meupdf/interface/commands.py:70
 msgid "Close current tab"
 msgstr "Fechar a aba atual"
 
-#: src/meupdf/interface/commands.py:67
+#: src/meupdf/interface/commands.py:78
 msgid "Exit"
 msgstr "Sair"
 
-#: src/meupdf/interface/commands.py:69
+#: src/meupdf/interface/commands.py:80
 msgid "Exit app"
 msgstr "Sair do aplicativo"
 
-#: src/meupdf/interface/commands.py:84 src/meupdf/interface/merge.py:26
+#: src/meupdf/interface/commands.py:95 src/meupdf/interface/merge.py:27
 msgid "Merge"
 msgstr "Juntar"
 
-#: src/meupdf/interface/commands.py:87
+#: src/meupdf/interface/commands.py:98
 msgid "Merge two or more PDF documents"
 msgstr "Junte dois ou mais documentos PDF"
 
@@ -114,49 +94,74 @@ msgstr "Para cima"
 msgid "Down"
 msgstr "Para baixo"
 
-#: src/meupdf/interface/merge.py:24
+#: src/meupdf/interface/main_content.py:22
+msgid "Welcome"
+msgstr "Bem-vindo"
+
+#: src/meupdf/interface/main_content.py:22
+msgid "Welcome to Meu PDF"
+msgstr "Bem-vindo ao Meu PDF"
+
+#: src/meupdf/interface/main_content.py:47 src/meupdf/interface/merge.py:6
+msgid "Choose destination file"
+msgstr "Escolha o arquivo de destino"
+
+#: src/meupdf/interface/main_content.py:57
+msgid "Open PDF file"
+msgstr "Abra um arquivo PDF"
+
+#: src/meupdf/interface/main_content.py:69
+msgid "Network error!"
+msgstr "Erro de rede!"
+
+#: src/meupdf/interface/main_content.py:69
+msgid ""
+"It was not possible to bind to a network port. Document contents will not"
+" be displayed."
+msgstr ""
+"Não foi possível conectar-se a uma porta de rede. Documentos não serão "
+"exibidos."
+
+#: src/meupdf/interface/merge.py:25
 msgid "Add document"
 msgstr "Acrescentar documento"
 
-#: src/meupdf/interface/merge.py:25
+#: src/meupdf/interface/merge.py:26
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/meupdf/interface/merge.py:36
+#: src/meupdf/interface/merge.py:37
 msgid "Select PDF files to merge"
 msgstr "Selecione arquivos PDF para juntar"
 
-#: src/meupdf/interface/merge.py:51
+#: src/meupdf/interface/merge.py:52
 msgid "File format error!"
 msgstr "Erro de formato de arquivo"
 
-#: src/meupdf/interface/merge.py:51
+#: src/meupdf/interface/merge.py:52
 msgid "file format"
 msgstr "formato de arquivo"
 
-#: src/meupdf/interface/merge.py:51
+#: src/meupdf/interface/merge.py:52
 msgid "is not supported"
 msgstr "não é suportado"
 
-#: src/meupdf/interface/merge.py:61
-msgid "Chose destination file"
-msgstr "Escolha o arquivo de destino"
-
-#: src/meupdf/interface/merge.py:62
-msgid "merged.pdf"
-msgstr "compilado.pdf"
-
-#: src/meupdf/interface/tab_old.py:163
-msgid "Page"
-msgstr "Página"
-
-#: src/meupdf/interface/tab_old.py:166
-msgid "of"
-msgstr "de"
+#: src/meupdf/interface/merge.py:63
+msgid "merged"
+msgstr "Juntar"
 
 #~ msgid "Merge documents"
 #~ msgstr "Juntar documentos"
 
 #~ msgid "Merge!"
 #~ msgstr "Juntar!"
+
+#~ msgid "merged.pdf"
+#~ msgstr "compilado.pdf"
+
+#~ msgid "Page"
+#~ msgstr "Página"
+
+#~ msgid "of"
+#~ msgstr "de"
 

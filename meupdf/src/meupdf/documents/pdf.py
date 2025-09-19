@@ -71,6 +71,12 @@ class PDFDocument(GenericDocument):
         else:
             raise NotImplementedError('PDF merge not implemented without pymupdf yet')
 
+    def extract_pages(self, new_path:str, first:int, last:int=None):
+        if 'pymupdf' in sys.modules:
+            new_doc = pymupdf.Document()
+            new_doc.insert_pdf(self._document, from_page=first, to_page=last or first)
+            new_doc.save(Path(new_path))
+
     def save(self, new_path:Path|str|None=None):
         if new_path:
             self.file_path = Path(new_path)

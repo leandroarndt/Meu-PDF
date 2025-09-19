@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, functools
 
 import toga
 
@@ -7,6 +7,7 @@ from toga.style import pack
 from meupdf.interface.commands import create_commands
 from meupdf.interface.tab import DocumentTab
 from meupdf.interface.merge import MergeWindow
+from meupdf.documents import pdf
 
 class MainWindow(toga.MainWindow):
     main_box:toga.Box
@@ -28,9 +29,32 @@ class MainWindow(toga.MainWindow):
         create_commands(app, self, app.commands, self.toolbar)
 
         self.content = self.main_box
+    
+    def extract_current_page(self, widget, **kwargs):
+        current_tab = self.tab_area.current_tab
+        async def get_page():
+            result = await current_tab.view.evaluate_javascript('document.getElementById("pageNumber").value;')
+            return result
+        
+        def do_save(task, page):
+            file_name = task.result()
+            if file_name:
+                current_tab.document.extract_pages(file_name, page-1)
 
+        def ask_save(task):
+            page = int(task.result())
+            dialog = toga.SaveFileDialog(
+                _('Choose destination file'),
+                f'{current_tab.document.file_path.stem} p {page}.{pdf.DOCUMENT_FORMAT.lower()}',
+                file_types=[pdf.DOCUMENT_FORMAT.lower()]
+            )
+            task = asyncio.create_task(self.dialog(dialog))
+            task.add_done_callback(functools.partial(do_save, page=page))
+        task = asyncio.create_task(get_page())
+        task.add_done_callback(functools.partial(ask_save))
+    
     def open_dialog(self, widget, **kwargs):
-        dialog = toga.OpenFileDialog(_('Open PDF file'), file_types=['PDF'])
+        dialog = toga.OpenFileDialog(_('Open PDF file'), file_types=[pdf.DOCUMENT_FORMAT.lower()])
         
         task = asyncio.create_task(self.dialog(dialog))
         task.add_done_callback(self.open_dialog_closed)
@@ -67,5 +91,7 @@ class MainWindow(toga.MainWindow):
     def on_select_tab(self, widget, **kwargs):
         if self.tab_area.content.index(self.tab_area.current_tab) == 0:
             self.app.commands['close_tab'].enabled = False
+            self.app.commands['extract_current_page'].enabled = False
         else:
             self.app.commands['close_tab'].enabled = True
+            self.app.commands['extract_current_page'].enabled = True

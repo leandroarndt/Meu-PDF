@@ -39,7 +39,9 @@ class FileSubmenus:
 
 # File menu items:
 #   0. Open*
-#   10. Close*
+#   10. Extract current page*
+#   20. Extract pages*
+#   20. Close*
 #   100. Exit
 class FileMenuItems:
     OPEN = lambda app, window: toga.Command(
@@ -49,7 +51,18 @@ class FileMenuItems:
         shortcut = toga.Key.MOD_1 + 'O',
         tooltip = _('Open a PDF file'),
         order = 0,
+        enabled = True,
         group = RootMenus.FILE,
+    )
+    EXTRACT_PAGE = lambda app, window: toga.Command(
+        window.extract_current_page,
+        text = _('Extract current page'),
+        #icon,
+        tooltip = _('Extract current page'),
+        order = 10,
+        group = RootMenus.FILE,
+        enabled = False,
+        id = 'extract_current_page'
     )
     CLOSE = lambda app, window: toga.Command(
         window.close_tab,
@@ -57,7 +70,7 @@ class FileMenuItems:
         shortcut = toga.Key.MOD_1 + 'W',
         #icon,
         tooltip = _('Close current tab'),
-        order = 10,
+        order = 20,
         group = RootMenus.FILE,
         enabled = False,
         id = 'close_tab',
@@ -73,7 +86,7 @@ class FileMenuItems:
     )
 
     def create_commands(app, window, menu, toolbar):
-        for item in [FileMenuItems.OPEN, FileMenuItems.CLOSE]:
+        for item in [FileMenuItems.OPEN, FileMenuItems.EXTRACT_PAGE, FileMenuItems.CLOSE]:
             toolbar.add(item(app, window))
         for item in [FileMenuItems.EXIT]:
             menu.add(item(app, window))
@@ -86,7 +99,8 @@ class CreateMenuItems:
         icon = app.paths.app / 'resources/icons/merge.png',
         tooltip = _('Merge two or more PDF documents'),
         order = 0,
-        group = RootMenus.CREATE
+        group = RootMenus.CREATE,
+        enabled = True,
     )
 
     def create_commands(app, window, menu, toolbar):

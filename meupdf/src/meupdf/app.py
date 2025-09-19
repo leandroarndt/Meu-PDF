@@ -68,11 +68,6 @@ class MeuPDF(toga.App):
         self.main_window = MainWindow(self, title=self.formal_name)
         self.main_window.show()
 
-
-    
-
-
-
     def on_exit(self, **kwargs):
         # Delete server cache
         files = (self.server_dir / self.files_uri).glob('**', recurse_symlinks=False)
