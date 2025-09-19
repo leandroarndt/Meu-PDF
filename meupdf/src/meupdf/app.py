@@ -10,6 +10,7 @@ from toga.style.pack import Pack
 from meupdf.interface.viewserver import start_httpd
 from meupdf.interface.tab import DocumentTab
 from meupdf.interface.merge import MergeWindow
+from meupdf.interface.commands import create_commands
 
 # toga.Widget.DEBUG_LAYOUT_ENABLED = True
 
@@ -63,7 +64,7 @@ class MeuPDF(toga.App):
         self.server_thread = threading.Thread(target=self.start_server)
         self.server_thread.start()
 
-        # Prepare interface
+        # Prepare interface contents
         self.main_box = toga.Box()
         self.tab_area = toga.OptionContainer(style=Pack(flex=1), content=[
             toga.OptionItem(text=_('Welcome'), content=toga.Label(_('Welcome to Meu PDF'))),
@@ -73,39 +74,14 @@ class MeuPDF(toga.App):
 
         self.main_window = toga.MainWindow(title=self.formal_name)
 
+        # Toolbar and menus
+        self.commands.clear()
         self.main_window.toolbar.clear()
-        self.main_window.toolbar.add(
-            toga.Command(
-                self.open_dialog,
-                text=_('Open'),
-                icon=self.paths.app / 'resources/icons/open.png',
-                shortcut=toga.Key.MOD_1 + 'O',
-                tooltip=_('Open a PDF file'),
-                order=0,
-                group=toga.Group.FILE
-            ),
-            toga.Command(
-                self.open_merge_window,
-                text=_('Merge'),
-                shortcut=toga.Key.MOD_1 + 'M',
-                icon=self.paths.app / 'resources/icons/merge.png',
-                tooltip=_('Merge two or more PDF documents'),
-                order=1,
-                group=toga.Group.FILE
-            ),
-            toga.Command(
-                self.close_tab,
-                text=_('Close'),
-                shortcut=toga.Key.MOD_1 + 'W',
-                #icon,
-                tooltip=_('Close current tab'),
-                order=2,
-                group=toga.Group.FILE,
-                enabled=False,
-                id='close_tab',
-            ),
-        )
+        # create_menus(self, self.commands)
+        # create_toolbar(self, self.main_window.toolbar)
+        create_commands(self, self.commands, self.main_window.toolbar)
 
+        # Add main box
         self.main_window.content = self.main_box
         self.main_window.show()
 
@@ -164,6 +140,9 @@ class MeuPDF(toga.App):
             except:
                 pass
         return True
+    
+    def request_exit(self, *args, **kwargs):
+        super().request_exit()
 
 def main():
     return MeuPDF()
