@@ -42,8 +42,8 @@ class FileSubmenus:
 #   10. Close*
 #   100. Exit
 class FileMenuItems:
-    OPEN = lambda app: toga.Command(
-        app.open_dialog,
+    OPEN = lambda app, window: toga.Command(
+        window.open_dialog,
         text = _('Open'),
         icon = app.paths.app / 'resources/icons/open.png',
         shortcut = toga.Key.MOD_1 + 'O',
@@ -51,8 +51,8 @@ class FileMenuItems:
         order = 0,
         group = RootMenus.FILE,
     )
-    CLOSE = lambda app: toga.Command(
-        app.close_tab,
+    CLOSE = lambda app, window: toga.Command(
+        window.close_tab,
         text = _('Close'),
         shortcut = toga.Key.MOD_1 + 'W',
         #icon,
@@ -62,7 +62,7 @@ class FileMenuItems:
         enabled = False,
         id = 'close_tab',
     )
-    EXIT = lambda app: toga.Command(
+    EXIT = lambda app, window: toga.Command(
         app.request_exit,
         text = _('Exit'),
         shortcut = toga.Key.MOD_1 + 'Q',
@@ -72,15 +72,15 @@ class FileMenuItems:
         enabled = True,
     )
 
-    def create_commands(app, menu, toolbar):
+    def create_commands(app, window, menu, toolbar):
         for item in [FileMenuItems.OPEN, FileMenuItems.CLOSE]:
-            toolbar.add(item(app))
+            toolbar.add(item(app, window))
         for item in [FileMenuItems.EXIT]:
-            menu.add(item(app))
+            menu.add(item(app, window))
 
 class CreateMenuItems:
-    MERGE = lambda app: toga.Command(
-        app.open_merge_window,
+    MERGE = lambda app, window: toga.Command(
+        window.open_merge_window,
         text = _('Merge'),
         shortcut = toga.Key.MOD_1 + 'M',
         icon = app.paths.app / 'resources/icons/merge.png',
@@ -89,26 +89,12 @@ class CreateMenuItems:
         group = RootMenus.CREATE
     )
 
-    def create_commands(app, menu, toolbar):
+    def create_commands(app, window, menu, toolbar):
         for item in [CreateMenuItems.MERGE]:
-            toolbar.add(item(app))
+            toolbar.add(item(app, window))
         for item in []:
-            menu.add(item(app))
+            menu.add(item(app, window))
 
-    def create_menu(app, commandset):
-        commandset.add(CreateMenuItems.MERGE(app))
-    
-    def create_toolbar(app, commandset):
-        commandset.add(CreateMenuItems.MERGE(app))
-
-def create_menus(app, commandset):
-    FileMenuItems.create_menu(app, commandset)
-    CreateMenuItems.create_menu(app, commandset)
-
-def create_toolbar(app, commandset):
-    FileMenuItems.create_toolbar(app, commandset)
-    CreateMenuItems.create_toolbar(app, commandset)
-
-def create_commands(app, menu, toolbar):
-    FileMenuItems.create_commands(app, menu, toolbar)
-    CreateMenuItems.create_commands(app, menu, toolbar)
+def create_commands(app, window, menu, toolbar):
+    FileMenuItems.create_commands(app, window, menu, toolbar)
+    CreateMenuItems.create_commands(app, window, menu, toolbar)
