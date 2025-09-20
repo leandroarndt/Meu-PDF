@@ -1,0 +1,11 @@
+{
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.addHoverSummaries": true,
+    "python.analysis.inlayHints.callArgumentNames": "all",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.supportDocstringTemplate": true,
+    "python.analysis.typeCheckingMode": "standard",
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.useEnvironmentsExtension": true
+}

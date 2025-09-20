@@ -65,10 +65,10 @@ class MainWindow(toga.MainWindow):
     def open_dialog_closed(self, task):
         file = task.result()
         if file:
-            new_tab = DocumentTab(file, self.app.server_dir, self.app.files_uri, self.app.host, self.app.port)
+            new_tab = DocumentTab(file, self.app.server_dir, self.app.files_uri, self.app.host, self.app.port) # type: ignore
             self.tab_area.content.append(new_tab)
             self.tab_area.current_tab = new_tab
-        if not self.app.binded_to_port:
+        if not self.app.binded_to_port: # type: ignore
             dialog = toga.ErrorDialog(_('Network error!'), _('It was not possible to bind to a network port. Document contents will not be displayed.'))
             task = asyncio.create_task(self.dialog(dialog))
     

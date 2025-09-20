@@ -46,7 +46,7 @@ class FileRow(toga.Box):
     def inhibit_buttons(self):
         position = self.parent_container.index(self)
         self.up_button.enabled = position != 0
-        self.down_button.enabled = position != len(self.parent.children) - 1
+        self.down_button.enabled = position != len(self.parent.children) - 1 # type: ignore
 
     def move_up(self, widget, **kwargs):
         position = self.parent_container.index(self) - 1
