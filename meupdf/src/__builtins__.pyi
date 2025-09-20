@@ -1,0 +1,3 @@
+# __builtins__.pyi
+
+def _(str) -> str: ...
