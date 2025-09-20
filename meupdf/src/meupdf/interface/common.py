@@ -4,6 +4,15 @@ import toga
 from toga.style import pack
 
 from meupdf.documents.generic import GenericDocument, document_formats, FormatInfos, get_document_class
+from meupdf.interface.styles import flex_margin, THUMBNAIL
+
+class PageImage(toga.ImageView):
+
+    def __init__(self, document:GenericDocument, page:int=0, *args, **kwargs):
+        pix = document.pages[page].to_image()
+        img_data = pix.tobytes(output='png')
+        image = toga.Image(src=img_data)
+        super().__init__(image=image, *args, **kwargs)
 
 class FileRow(toga.Box):
     # Miniature | file name | up | down
@@ -23,10 +32,7 @@ class FileRow(toga.Box):
 
         # First page miniature
         try:
-            pix = self.document.pages[0].to_image()
-            img_data = pix.tobytes(output='png')
-            image = toga.Image(src=img_data)
-            self.miniature = toga.ImageView(image, style=pack.Pack(height=100))
+            self.miniature = PageImage(self.document, page=0, style=pack.Pack(height=THUMBNAIL))
             self.add(self.miniature)
         except NotImplementedError:
             pass
@@ -34,7 +40,7 @@ class FileRow(toga.Box):
         # File info
         label = toga.Label(text=str(self.document.file_path.stem) + \
                 f' ({document_formats[self.document.format][FormatInfos.SHORT_NAME]})\n' + _\
-                ('At ') + str(self.document.file_path.parent), style=pack.Pack(flex=1, margin=5))
+                ('At ') + str(self.document.file_path.parent), style=flex_margin)
         self.add(label)
 
         # Move buttons
