@@ -60,28 +60,29 @@ class PDFDocument(GenericDocument):
 
     def merge(self, other):
         if 'pymupdf' in sys.modules:
-            toc = self._document.get_toc(False)
+            toc = self._document.get_toc(False) # type: ignore
             toc2 = other._document.get_toc(False)
-            self._document.insert_pdf(other._document)
+            self._document.insert_pdf(other._document) # type: ignore
             for t in toc2:
                 t[2] += self.page_count
             self.page_count += len(other._document)
             toc = toc + toc2
-            self._document.set_toc(toc)
+            self._document.set_toc(toc) # type: ignore
         else:
             raise NotImplementedError('PDF merge not implemented without pymupdf yet')
 
-    def extract_pages(self, new_path:str, first:int, last:int=None):
+    def extract_pages(self, new_path:str|None=None, first:int=0, last:int|None=None):
         if 'pymupdf' in sys.modules:
-            new_doc = pymupdf.Document()
+            new_doc = pymupdf.Document() # type: ignore
             new_doc.insert_pdf(self._document, from_page=first, to_page=last or first)
-            new_doc.save(Path(new_path))
+            if new_path is not None:
+                new_doc.save(Path(new_path))
 
     def save(self, new_path:Path|str|None=None):
         if new_path:
             self.file_path = Path(new_path)
         if 'pymupdf' in sys.modules:
-            self._document.save(self.file_path)
+            self._document.save(self.file_path) # type: ignore
 
 document_formats[DOCUMENT_FORMAT] = {
         FormatInfos.FULL_NAME: _('Portable Document File'),
