@@ -1,11 +1,11 @@
-import functools
+import functools, asyncio
 from typing import Literal
 import toga
 
 from toga import constants
 from toga.style import pack
 
-from meupdf.documents.pdf import PDFDocument
+from meupdf.documents.pdf import PDFDocument, DOCUMENT_FORMAT
 from meupdf.interface.common import PageImage
 from meupdf.interface.styles import row_margin_center, flex_column_right, flex_column_center_margin, right_align, MARGIN, THUMBNAIL
 
@@ -18,6 +18,7 @@ class PageRange(toga.Box):
     last_miniature:toga.ImageView
     last_value:int
     delete_button:toga.Button
+    add_button:toga.Button
 
     def __init__(self, document, first_page:int|None=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -47,7 +48,7 @@ class PageRange(toga.Box):
         """
         try:
             return int(self.first_page.value) - 1, int(self.last_page.value) - 1
-        except TypeError:
+        except (TypeError, ValueError):
             try:
                 return int(self.first_page.value) - 1, None
             except:
@@ -99,7 +100,7 @@ class ExtractPagesWindow(toga.Window):
     ranges:toga.Box
     add_button:toga.Button
     cancel_button:toga.Button
-    extact_button:toga.Button
+    extract_button:toga.Button
 
     def __init__(self, document, first_page=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -112,10 +113,29 @@ class ExtractPagesWindow(toga.Window):
         self.ranges.add(first_row)
         self.scroll = toga.ScrollContainer(vertical=True, horizontal=True, content=self.ranges, style=flex_column_center_margin)
         self.cancel_button = toga.Button(_('Cancel'), enabled=True, on_press=self.do_close)
+        self.extract_button = toga.Button(_('Extract pages'), enabled=True, on_press=self.extract)
         button_row = toga.Box(style=right_align)
         button_row.add(self.cancel_button)
+        button_row.add(self.extract_button)
         self.content.add(self.scroll, button_row)
-    
+
+    def extract(self, widget, **kwargs):
+        def do_save(task):
+            file_name = task.result()
+            if file_name:
+                first, last = self.ranges.children[0].get_range()
+                self.document.extract_pages(file_name, first=first, last=last)
+            
+                self.do_close(None)
+
+        dialog = toga.SaveFileDialog(
+            _('Choose destination file'),
+            f'{self.document.file_path.stem} - {_('selected pages')}.{DOCUMENT_FORMAT.lower()}',
+            file_types=[DOCUMENT_FORMAT.lower()]
+        )
+        task = asyncio.create_task(self.dialog(dialog))
+        task.add_done_callback(do_save)
+
     def prepare_to_close(self, window, **kwargs) -> Literal[True]:
         for row in self.ranges.children:
             row.document.close()
