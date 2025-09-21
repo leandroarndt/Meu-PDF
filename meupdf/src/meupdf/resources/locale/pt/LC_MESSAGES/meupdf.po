@@ -60,9 +60,8 @@ msgstr "Extrair página atual"
 
 #: src/meupdf/interface/commands.py:69
 #: src/meupdf/interface/extract_pages.py:116
-#, fuzzy
 msgid "Extract pages"
-msgstr "Extrair página atual"
+msgstr "Extrair páginas"
 
 #: src/meupdf/interface/commands.py:71
 msgid "Extract one or more pages from current document"
