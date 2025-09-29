@@ -65,7 +65,7 @@ class MeuPDF(toga.App):
         self.server_thread.start()
 
         # Interface contents
-        self.main_window = MainWindow(self, title=self.formal_name)
+        self.main_window = MainWindow(self, title=self.formal_name) # pyright: ignore[reportIncompatibleMethodOverride]
         self.main_window.show()
 
     def on_exit(self, **kwargs):
