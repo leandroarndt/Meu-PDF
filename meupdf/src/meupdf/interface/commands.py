@@ -41,7 +41,7 @@ class FileSubmenus:
 #   0. Open*
 #   10. Extract current page*
 #   20. Extract pages*
-#   20. Close*
+#   30. Close*
 #   100. Exit
 class FileMenuItems:
     OPEN = lambda app, window: toga.Command(
@@ -64,13 +64,23 @@ class FileMenuItems:
         enabled = False,
         id = 'extract_current_page'
     )
+    EXTRACT_PAGES = lambda app, window: toga.Command(
+        window.open_extract_pages_window,
+        text = _('Extract pages'),
+        #icon
+        tooltip = _('Extract one or more pages from current document'),
+        order = 20,
+        group = RootMenus.FILE,
+        enabled = False,
+        id = 'extract_pages',
+    )
     CLOSE = lambda app, window: toga.Command(
         window.close_tab,
         text = _('Close'),
         shortcut = toga.Key.MOD_1 + 'W',
         #icon,
         tooltip = _('Close current tab'),
-        order = 20,
+        order = 30,
         group = RootMenus.FILE,
         enabled = False,
         id = 'close_tab',
@@ -86,7 +96,12 @@ class FileMenuItems:
     )
 
     def create_commands(app, window, menu, toolbar):
-        for item in [FileMenuItems.OPEN, FileMenuItems.EXTRACT_PAGE, FileMenuItems.CLOSE]:
+        for item in [
+            FileMenuItems.OPEN,
+            FileMenuItems.EXTRACT_PAGE,
+            FileMenuItems.EXTRACT_PAGES,
+            FileMenuItems.CLOSE
+        ]:
             toolbar.add(item(app, window))
         for item in [FileMenuItems.EXIT]:
             menu.add(item(app, window))

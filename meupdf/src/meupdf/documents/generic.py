@@ -24,20 +24,21 @@ document_formats = DocumentFormats()
 class GenericDocument(object):
     format:DocumentFormats
     format_info:dict
-    file_path:Path = None
+    file_path:Path
     pages:list
     page_count:int
 
     def __init__(self, format, *args, **kwargs):
         self.format = format
         self.format_info = document_formats[format]
-        if 'file_path' in kwargs:
-            self.hashed_path = str(hash(str(kwargs['file_path'])))
+        # if 'file_path' in kwargs:
+        #     self.hashed_path = str(hash(str(kwargs['file_path'])))
 
-    def hashed_path(self, suffix=''):
-        if 'file_path' is None:
+    def hashed_path(self, suffix='') -> str:
+        try:
+            return str(hash(str(self.file_path))) + suffix
+        except NameError:
             raise ValueError(f'This {self.format_info[FormatInfos.FULL_NAME]} instance doesn\'t have a "file_path" value')
-        return str(hash(str(self.file_path))) + suffix
 
     def close(self):
         pass # Fail silently, since it must be closed anyway when the object is destroyed
@@ -58,7 +59,7 @@ class GenericPage(object):
     def to_image(self, zoom:int=1, rotation:int=0):
         raise NotImplementedError(f'Conversion to image not implemented for pages of {self._document.format} documents.')
 
-def get_document_class(file_path:Path):
+def get_document_class(file_path:Path|str):
     formats:dict = DocumentFormats()
     file_path = Path(file_path) # ensures it's really a Path object
     extension = file_path.suffix

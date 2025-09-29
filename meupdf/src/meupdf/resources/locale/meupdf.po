@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meu PDF VERSION\n"
 "Report-Msgid-Bugs-To: meupdf.locale@visaocatolica.com.br\n"
-"POT-Creation-Date: 2025-09-19 20:18-0300\n"
+"POT-Creation-Date: 2025-09-29 09:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/meupdf/documents/pdf.py:87
+#: src/meupdf/documents/pdf.py:127
 msgid "Portable Document File"
 msgstr ""
 
-#: src/meupdf/documents/pdf.py:88
+#: src/meupdf/documents/pdf.py:128
 msgid "PDF document"
 msgstr ""
 
@@ -53,67 +53,97 @@ msgstr ""
 msgid "Open a PDF file"
 msgstr ""
 
-#: src/meupdf/interface/commands.py:58 src/meupdf/interface/commands.py:60
+#: src/meupdf/interface/commands.py:59 src/meupdf/interface/commands.py:61
 msgid "Extract current page"
 msgstr ""
 
-#: src/meupdf/interface/commands.py:67
+#: src/meupdf/interface/commands.py:69
+#: src/meupdf/interface/extract_pages.py:165
+msgid "Extract pages"
+msgstr ""
+
+#: src/meupdf/interface/commands.py:71
+msgid "Extract one or more pages from current document"
+msgstr ""
+
+#: src/meupdf/interface/commands.py:79
 msgid "Close"
 msgstr ""
 
-#: src/meupdf/interface/commands.py:70
+#: src/meupdf/interface/commands.py:82
 msgid "Close current tab"
 msgstr ""
 
-#: src/meupdf/interface/commands.py:78
+#: src/meupdf/interface/commands.py:90
 msgid "Exit"
 msgstr ""
 
-#: src/meupdf/interface/commands.py:80
+#: src/meupdf/interface/commands.py:92
 msgid "Exit app"
 msgstr ""
 
-#: src/meupdf/interface/commands.py:95 src/meupdf/interface/merge.py:27
+#: src/meupdf/interface/commands.py:112 src/meupdf/interface/merge.py:27
 msgid "Merge"
 msgstr ""
 
-#: src/meupdf/interface/commands.py:98
+#: src/meupdf/interface/commands.py:115
 msgid "Merge two or more PDF documents"
 msgstr ""
 
-#: src/meupdf/interface/document_organizer.py:37
+#: src/meupdf/interface/common.py:43
 msgid "At "
 msgstr ""
 
-#: src/meupdf/interface/document_organizer.py:41
+#: src/meupdf/interface/common.py:47
 msgid "Up"
 msgstr ""
 
-#: src/meupdf/interface/document_organizer.py:42
+#: src/meupdf/interface/common.py:48
 msgid "Down"
 msgstr ""
 
-#: src/meupdf/interface/main_content.py:22
-msgid "Welcome"
+#: src/meupdf/interface/extract_pages.py:40
+msgid "to"
 msgstr ""
 
-#: src/meupdf/interface/main_content.py:22
-msgid "Welcome to Meu PDF"
+#: src/meupdf/interface/extract_pages.py:52
+msgid "Add"
 msgstr ""
 
-#: src/meupdf/interface/main_content.py:47 src/meupdf/interface/merge.py:62
+#: src/meupdf/interface/extract_pages.py:53
+msgid "Remove"
+msgstr ""
+
+#: src/meupdf/interface/extract_pages.py:164 src/meupdf/interface/merge.py:26
+msgid "Cancel"
+msgstr ""
+
+#: src/meupdf/interface/extract_pages.py:187
+#: src/meupdf/interface/main_content.py:49 src/meupdf/interface/merge.py:62
 msgid "Choose destination file"
 msgstr ""
 
-#: src/meupdf/interface/main_content.py:57
+#: src/meupdf/interface/extract_pages.py:188
+msgid "selected pages"
+msgstr ""
+
+#: src/meupdf/interface/main_content.py:23
+msgid "Welcome"
+msgstr ""
+
+#: src/meupdf/interface/main_content.py:23
+msgid "Welcome to Meu PDF"
+msgstr ""
+
+#: src/meupdf/interface/main_content.py:60
 msgid "Open PDF file"
 msgstr ""
 
-#: src/meupdf/interface/main_content.py:69
+#: src/meupdf/interface/main_content.py:72
 msgid "Network error!"
 msgstr ""
 
-#: src/meupdf/interface/main_content.py:69
+#: src/meupdf/interface/main_content.py:72
 msgid ""
 "It was not possible to bind to a network port. Document contents will not"
 " be displayed."
@@ -121,10 +151,6 @@ msgstr ""
 
 #: src/meupdf/interface/merge.py:25
 msgid "Add document"
-msgstr ""
-
-#: src/meupdf/interface/merge.py:26
-msgid "Cancel"
 msgstr ""
 
 #: src/meupdf/interface/merge.py:37
