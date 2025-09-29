@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meu PDF VERSION\n"
 "Report-Msgid-Bugs-To: meupdf.locale@visaocatolica.com.br\n"
-"POT-Creation-Date: 2025-09-20 21:51-0300\n"
+"POT-Creation-Date: 2025-09-29 09:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: src/meupdf/documents/pdf.py:88
+#: src/meupdf/documents/pdf.py:127
 msgid "Portable Document File"
 msgstr ""
 
-#: src/meupdf/documents/pdf.py:89
+#: src/meupdf/documents/pdf.py:128
 msgid "PDF document"
 msgstr ""
 
@@ -58,7 +58,7 @@ msgid "Extract current page"
 msgstr ""
 
 #: src/meupdf/interface/commands.py:69
-#: src/meupdf/interface/extract_pages.py:116
+#: src/meupdf/interface/extract_pages.py:165
 msgid "Extract pages"
 msgstr ""
 
@@ -102,20 +102,28 @@ msgstr ""
 msgid "Down"
 msgstr ""
 
-#: src/meupdf/interface/extract_pages.py:33
+#: src/meupdf/interface/extract_pages.py:40
 msgid "to"
 msgstr ""
 
-#: src/meupdf/interface/extract_pages.py:115 src/meupdf/interface/merge.py:26
+#: src/meupdf/interface/extract_pages.py:52
+msgid "Add"
+msgstr ""
+
+#: src/meupdf/interface/extract_pages.py:53
+msgid "Remove"
+msgstr ""
+
+#: src/meupdf/interface/extract_pages.py:164 src/meupdf/interface/merge.py:26
 msgid "Cancel"
 msgstr ""
 
-#: src/meupdf/interface/extract_pages.py:132
+#: src/meupdf/interface/extract_pages.py:187
 #: src/meupdf/interface/main_content.py:49 src/meupdf/interface/merge.py:62
 msgid "Choose destination file"
 msgstr ""
 
-#: src/meupdf/interface/extract_pages.py:133
+#: src/meupdf/interface/extract_pages.py:188
 msgid "selected pages"
 msgstr ""
 
