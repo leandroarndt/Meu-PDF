@@ -14,14 +14,14 @@ class PDFPage(GenericPage):
     def __init__(self, document, number):
         super().__init__(document, number)
         if 'pymupdf' in sys.modules:
-            self._page = document._document[number]
-            self.width = self._page.rect[2] - self._page.rect[0],
-            self.height = self._page.rect[3] - self._page.rect[1],
+            self._page = document._document[number] # pyright: ignore[reportAttributeAccessIssue]
+            self.width = self._page.rect[2] - self._page.rect[0], # pyright: ignore[reportAttributeAccessIssue]
+            self.height = self._page.rect[3] - self._page.rect[1], # pyright: ignore[reportAttributeAccessIssue]
         else:
-            self._page = document._document.get_page(number)
+            self._page = document._document.get_page(number) # pyright: ignore[reportAttributeAccessIssue]
             self.width, self.height = self._page.trimbox.width, self._page.trimbox.right
     
-    def to_image(self, width:int=None, height:int=None, zoom:float=1.0, rotation:int=0):
+    def to_image(self, width:int|None=None, height:int|None=None, zoom:float=1.0, rotation:int=0): # pyright: ignore[reportIncompatibleMethodOverride]
         """Returns page image according to the given parameters in the following dimension
         priority order:
         width > height > zoom
@@ -32,27 +32,27 @@ class PDFPage(GenericPage):
                 zoom = width / (self._page.rect[2] - self._page.rect[0])
             elif height:
                 zoom = height / (self._page.rect[3] - self._page.rect[1])
-            matrix = pymupdf.Matrix(zoom, zoom).prerotate(rotation)
+            matrix = pymupdf.Matrix(zoom, zoom).prerotate(rotation) # pyright: ignore[reportPossiblyUnboundVariable]
             return self._page.get_pixmap(matrix=matrix)
         else:
             raise NotImplementedError('PDF page images not implemented without pymupdf yet')
 
 class PDFDocument(GenericDocument):
     pages:list[PDFPage]
-    format:str = DOCUMENT_FORMAT
+    format:str = DOCUMENT_FORMAT # pyright: ignore[reportIncompatibleVariableOverride]
 
     def __init__(self, file_path):
         super().__init__(format=PDFDocument.format)
         self.file_path = Path(file_path
                               )
         if 'pymupdf' in sys.modules:
-            self._document = pymupdf.open(file_path)
+            self._document = pymupdf.open(file_path) # pyright: ignore[reportPossiblyUnboundVariable]
             self.page_count = self._document.page_count
             self.pages = []
             for p in range(self.page_count):
                 self.pages.append(PDFPage(self, p))
         else:
-            self._document = pypdf.PdfReader(file_path)
+            self._document = pypdf.PdfReader(file_path) # pyright: ignore[reportPossiblyUnboundVariable]
             self.page_count = self._document.get_num_pages()
             self.pages = []
             for p in range(self.page_count):
@@ -77,6 +77,8 @@ class PDFDocument(GenericDocument):
             new_doc.insert_pdf(self._document, from_page=first, to_page=last or first)
             if new_path is not None:
                 new_doc.save(Path(new_path))
+        else:
+            raise NotImplementedError('Page extraction without pymupdf not implemented yet')
 
     def save(self, new_path:Path|str|None=None):
         if new_path:
