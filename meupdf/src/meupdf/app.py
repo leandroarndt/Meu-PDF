@@ -30,6 +30,7 @@ class MeuPDF(toga.App):
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     s.bind((self.host, port))
                     self.port = port
+                    self.__class__.port = port
                     print(f'Binded to port {port}')
                     return port
             except OSError:

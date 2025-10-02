@@ -8,6 +8,7 @@ from meupdf.interface.commands import create_commands, FileMenuItems
 from meupdf.interface.tab import DocumentTab
 from meupdf.interface.extract_pages import ExtractPagesWindow
 from meupdf.interface.merge import MergeWindow
+from meupdf.interface.viewserver import ViewServer
 from meupdf.documents import pdf
 
 class MainWindow(toga.MainWindow):
@@ -85,12 +86,29 @@ class MainWindow(toga.MainWindow):
         current_tab = self.tab_area.current_tab
         task = asyncio.create_task(self.get_page(tab=current_tab))
         task.add_done_callback(functools.partial(open_window, tab=current_tab))
-        
 
     def open_merge_window(self, widget, **kwargs):
         merge_window = MergeWindow()
         merge_window.show()
         merge_window.open_dialog(widget, first_selection=True)
+
+    async def save_tab(self, widget, **kwargs):
+        if self.tab_area.current_tab.index == 0: # Welcome page
+            return
+        tab:DocumentTab = self.tab_area.current_tab
+        key = ViewServer.create_expectation(tab.document.file_path, int(tab.document.hashed_path()))
+        script =   'var save = async function() {'
+        script +=  '  var xhr = new XMLHttpRequest();'
+        script += f'  xhr.open("POST", "http://{self.app.host}:{self.app.port}");' # pyright: ignore[reportAttributeAccessIssue]
+        script +=  '  xhr.setRequestHeader("Content-Type", "application/pdf");'
+        script += f'  xhr.setRequestHeader("path", "{str(tab.file_path).replace('\\', '\\\\')}");'
+        script += f'  xhr.setRequestHeader("hash", "{tab.document.hashed_path()}");'
+        script += f'  xhr.setRequestHeader("key", "{key}");'
+        script +=  '  var doc = await PDFViewerApplication.pdfDocument.saveDocument();'
+        script +=  '  xhr.send(doc);'
+        script +=  '};'
+        script +=  'save();'
+        result = await tab.view.evaluate_javascript(script)
 
     def close_tab(self, widget, **kwargs):
         if self.tab_area.current_tab.index == 0: # Do not close welcome page
@@ -111,6 +129,7 @@ class MainWindow(toga.MainWindow):
             'close_tab',
             'extract_current_page',
             'extract_pages',
+            'save_file',
         ]
         for command in command_list:
             self.app.commands[command].enabled = \
