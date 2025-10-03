@@ -54,7 +54,6 @@ class MeuPDF(toga.App):
         self.server_dir = self.paths.cache / 'viewserver'
         print(f'Server dir at {self.server_dir}')
         (self.server_dir / self.files_uri).mkdir(parents=True, exist_ok=True)
-        # shutil.copytree(self.paths.app / 'resources/viewserver', self.server_dir, dirs_exist_ok=True)
         server_files = zipfile.ZipFile(self.paths.app / 'resources/viewserver/pdfjs-5.4.149-dist.zip')
         server_files.extractall(self.server_dir)
         try:
