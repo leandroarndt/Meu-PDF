@@ -87,6 +87,17 @@ class FileMenuItems:
         enabled = False,
         id = 'save_file',
     )
+    SAVE_AS = lambda app, window: toga.Command(
+        window.save_as,
+        text = _('Save as…'),
+        # shortcut = toga.Key.MOD_1 + 'S',
+        #icon,
+        tooltip = _('Save file with another name'),
+        order = 30,
+        group = RootMenus.FILE,
+        enabled = False,
+        id = 'save_as',
+    )
     CLOSE = lambda app, window: toga.Command(
         window.close_tab,
         text = _('Close'),
@@ -108,7 +119,8 @@ class FileMenuItems:
         enabled = True,
     )
 
-    def create_commands(app, window, menu, toolbar):
+    @classmethod
+    def create_commands(cls, app, window, menu, toolbar):
         for item in [
             FileMenuItems.OPEN,
             FileMenuItems.EXTRACT_PAGE,
@@ -117,7 +129,7 @@ class FileMenuItems:
             FileMenuItems.CLOSE,
         ]:
             toolbar.add(item(app, window))
-        for item in [FileMenuItems.EXIT]:
+        for item in [FileMenuItems.EXIT, FileMenuItems.SAVE_AS]:
             menu.add(item(app, window))
 
 class CreateMenuItems:
@@ -132,7 +144,8 @@ class CreateMenuItems:
         enabled = True,
     )
 
-    def create_commands(app, window, menu, toolbar):
+    @classmethod
+    def create_commands(cls, app, window, menu, toolbar):
         for item in [CreateMenuItems.MERGE]:
             toolbar.add(item(app, window))
         for item in []:
