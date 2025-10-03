@@ -1,4 +1,5 @@
 import asyncio, functools
+from pathlib import Path
 
 import toga
 
@@ -8,6 +9,7 @@ from meupdf.interface.commands import create_commands, FileMenuItems
 from meupdf.interface.tab import DocumentTab
 from meupdf.interface.extract_pages import ExtractPagesWindow
 from meupdf.interface.merge import MergeWindow
+from meupdf.interface.viewserver import ViewServer
 from meupdf.documents import pdf
 
 class MainWindow(toga.MainWindow):
@@ -48,7 +50,7 @@ class MainWindow(toga.MainWindow):
             dialog = toga.SaveFileDialog(
                 _('Choose destination file'),
                 f'{current_tab.document.file_path.stem} p {page}.{pdf.DOCUMENT_FORMAT.lower()}',
-                file_types=[pdf.DOCUMENT_FORMAT.lower()]
+                file_types=[pdf.DOCUMENT_FORMAT.lower()],
             )
             task = asyncio.create_task(self.dialog(dialog))
             task.add_done_callback(functools.partial(do_save, page=page))
@@ -85,12 +87,81 @@ class MainWindow(toga.MainWindow):
         current_tab = self.tab_area.current_tab
         task = asyncio.create_task(self.get_page(tab=current_tab))
         task.add_done_callback(functools.partial(open_window, tab=current_tab))
-        
 
     def open_merge_window(self, widget, **kwargs):
         merge_window = MergeWindow()
         merge_window.show()
         merge_window.open_dialog(widget, first_selection=True)
+
+    async def save(self, callback, tab:DocumentTab, path:str|Path|None=''):
+        path = path or tab.document.file_path
+        key = ViewServer.create_expectation(path, int(tab.document.hashed_path()), tab.view.url, callback)
+        script =   'var save = async function() {'
+        script +=  '  var xhr = new XMLHttpRequest();'
+        script += f'  xhr.open("POST", "http://{self.app.host}:{self.app.port}");' # pyright: ignore[reportAttributeAccessIssue]
+        script +=  '  xhr.setRequestHeader("Content-Type", "application/pdf");'
+        script += f'  xhr.setRequestHeader("path", "{str(tab.file_path).replace('\\', '\\\\')}");'
+        script += f'  xhr.setRequestHeader("hash", "{tab.document.hashed_path()}");'
+        script += f'  xhr.setRequestHeader("key", "{key}");'
+        script +=  '  var doc = await PDFViewerApplication.pdfDocument.saveDocument();'
+        script +=  '  xhr.send(doc);'
+        script +=  '};'
+        script +=  'save();'
+        return await tab.view.evaluate_javascript(script)
+
+    def _save_callback(self, path:Path, e:Exception|None, loop, tab:DocumentTab):
+        if e:
+            dialog = toga.ErrorDialog(_('Error saving file'), f'{_("File")} "{path.name}" {_("could not be saved:")}\n{e}')
+            asyncio.run_coroutine_threadsafe(self.dialog(dialog), loop)
+            return
+        if path != tab.document.file_path:
+            tab.text = path.name
+            tab.document.file_path = path
+
+    async def save_tab(self, widget, **kwargs):
+        if self.tab_area.current_tab.index == 0: # Welcome page
+            return
+
+        await self.save(
+            functools.partial(
+                self._save_callback,
+                path=self.tab_area.current_tab.document.file_path,
+                loop=asyncio.get_event_loop(),
+                tab=self.tab_area.current_tab,
+            ),
+            tab=self.tab_area.current_tab,
+            ) # pyright: ignore[reportArgumentType]
+
+    def save_as(self, widget, **kwargs):
+        if self.tab_area.current_tab.index == 0: # Welcome page
+            return
+        
+        tab:DocumentTab = self.tab_area.current_tab
+
+        def do_save(task):
+            new_path = task.result()
+            if new_path:
+                save_task = asyncio.create_task(
+                    self.save(
+                        functools.partial(
+                            self._save_callback,
+                            path=new_path,
+                            loop=asyncio.get_event_loop(),
+                            tab=self.tab_area.current_tab,
+                        ),
+                        tab=tab,
+                        path=new_path,
+                    )
+                )
+
+        dialog = toga.SaveFileDialog(
+            title=_('Choose destination file'),
+            suggested_filename=f'{tab.file_path.name}',
+            file_types=[pdf.DOCUMENT_FORMAT.lower()],
+        )
+        task = asyncio.create_task(self.dialog(dialog))
+        task.add_done_callback(do_save)
+
 
     def close_tab(self, widget, **kwargs):
         if self.tab_area.current_tab.index == 0: # Do not close welcome page
@@ -111,6 +182,8 @@ class MainWindow(toga.MainWindow):
             'close_tab',
             'extract_current_page',
             'extract_pages',
+            'save_file',
+            'save_as',
         ]
         for command in command_list:
             self.app.commands[command].enabled = \

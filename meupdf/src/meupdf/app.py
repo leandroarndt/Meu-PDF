@@ -4,13 +4,9 @@ Free Open Source PDF viewer and editor
 import threading, sys, socket, zipfile
 from pathlib import Path
 
-import toga, asyncio
-from toga.style.pack import Pack
+import toga
 
 from meupdf.interface.viewserver import start_httpd
-from meupdf.interface.tab import DocumentTab
-from meupdf.interface.merge import MergeWindow
-from meupdf.interface.commands import create_commands
 from meupdf.interface.main_content import MainWindow
 
 # toga.Widget.DEBUG_LAYOUT_ENABLED = True
@@ -30,6 +26,7 @@ class MeuPDF(toga.App):
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     s.bind((self.host, port))
                     self.port = port
+                    self.__class__.port = port
                     print(f'Binded to port {port}')
                     return port
             except OSError:
@@ -53,7 +50,6 @@ class MeuPDF(toga.App):
         self.server_dir = self.paths.cache / 'viewserver'
         print(f'Server dir at {self.server_dir}')
         (self.server_dir / self.files_uri).mkdir(parents=True, exist_ok=True)
-        # shutil.copytree(self.paths.app / 'resources/viewserver', self.server_dir, dirs_exist_ok=True)
         server_files = zipfile.ZipFile(self.paths.app / 'resources/viewserver/pdfjs-5.4.149-dist.zip')
         server_files.extractall(self.server_dir)
         try:
