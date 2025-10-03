@@ -4,13 +4,9 @@ Free Open Source PDF viewer and editor
 import threading, sys, socket, zipfile
 from pathlib import Path
 
-import toga, asyncio
-from toga.style.pack import Pack
+import toga
 
 from meupdf.interface.viewserver import start_httpd
-from meupdf.interface.tab import DocumentTab
-from meupdf.interface.merge import MergeWindow
-from meupdf.interface.commands import create_commands
 from meupdf.interface.main_content import MainWindow
 
 # toga.Widget.DEBUG_LAYOUT_ENABLED = True
