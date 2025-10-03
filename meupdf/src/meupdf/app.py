@@ -1,7 +1,7 @@
 """
 Free Open Source PDF viewer and editor
 """
-import threading, sys, socket, zipfile
+import threading, sys, socket, zipfile, os
 from pathlib import Path
 
 import toga
@@ -63,6 +63,21 @@ class MeuPDF(toga.App):
         # Interface contents
         self.main_window = MainWindow(self, title=self.formal_name) # pyright: ignore[reportIncompatibleMethodOverride]
         self.main_window.show()
+
+    def on_running(self, **kwargs):
+        class FakeResult(object):
+            def __init__(self, arg):
+                self.arg = arg
+            def result(self):
+                return arg
+        for arg in sys.argv[1:]:
+            path = (Path(os.getcwd()) / arg).resolve()
+            if path.exists():
+                self.main_window.open_dialog_closed(FakeResult(str(path)))
+            else:
+                print(f'Could not open "{path}": file does not exist.')
+                print(f'Current working directory: {os.getcwd()}')
+                print(f'Given file path: {arg}')
 
     def on_exit(self, **kwargs):
         # Delete server cache
