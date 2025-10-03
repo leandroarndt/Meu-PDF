@@ -183,6 +183,7 @@ class MainWindow(toga.MainWindow):
             print(e)
 
     def on_select_tab(self, widget, **kwargs):
+        # Enables or disables commands
         command_list = [
             'close_tab',
             'extract_current_page',
@@ -193,3 +194,9 @@ class MainWindow(toga.MainWindow):
         for command in command_list:
             self.app.commands[command].enabled = \
                 self.tab_area.content.index(self.tab_area.current_tab) != 0
+        
+        # Change window title
+        if self.tab_area.content.index(self.tab_area.current_tab) != 0:
+            self.title = f'Meu PDF: {self.tab_area.current_tab.text}'
+        else:
+            self.title = f'Meu PDF'
