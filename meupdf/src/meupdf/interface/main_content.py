@@ -69,7 +69,6 @@ class MainWindow(toga.MainWindow):
         if file:
             for tab in self.tab_area.content:
                 if tab.index != 0:
-                    print(f'{tab.document.file_path} == {file}? {tab.document.file_path == file}')
                     if tab.document.file_path == file:
                         self.tab_area.current_tab = tab
                         return
