@@ -39,8 +39,6 @@ class FileSubmenus:
 
 # File menu items:
 #   0. Open*
-#   10. Extract current page*
-#   20. Extract pages*
 #   30. Save*
 #   40. Save as
 #   50. Close*
@@ -55,26 +53,6 @@ class FileMenuItems:
         order = 0,
         enabled = True,
         group = RootMenus.FILE,
-    )
-    EXTRACT_PAGE = lambda app, window: toga.Command(
-        window.extract_current_page,
-        text = _('Extract current page'),
-        #icon,
-        tooltip = _('Extract current page'),
-        order = 10,
-        group = RootMenus.FILE,
-        enabled = False,
-        id = 'extract_current_page'
-    )
-    EXTRACT_PAGES = lambda app, window: toga.Command(
-        window.open_extract_pages_window,
-        text = _('Extract pages'),
-        #icon
-        tooltip = _('Extract one or more pages from current document'),
-        order = 20,
-        group = RootMenus.FILE,
-        enabled = False,
-        id = 'extract_pages',
     )
     SAVE = lambda app, window: toga.Command(
         window.save_tab,
@@ -123,8 +101,6 @@ class FileMenuItems:
     def create_commands(cls, app, window, menu, toolbar):
         for item in [
             FileMenuItems.OPEN,
-            FileMenuItems.EXTRACT_PAGE,
-            FileMenuItems.EXTRACT_PAGES,
             FileMenuItems.SAVE,
             FileMenuItems.CLOSE,
         ]:
@@ -132,21 +108,49 @@ class FileMenuItems:
         for item in [FileMenuItems.EXIT, FileMenuItems.SAVE_AS]:
             menu.add(item(app, window))
 
+# Create menu items:
+# 10 Extract current page*
+# 20 Extract pages*
+# 30 Merge*
 class CreateMenuItems:
+    EXTRACT_PAGE = lambda app, window: toga.Command(
+        window.extract_current_page,
+        text = _('Extract current page'),
+        #icon,
+        tooltip = _('Extract current page'),
+        order = 10,
+        group = RootMenus.CREATE,
+        enabled = False,
+        id = 'extract_current_page'
+    )
+    EXTRACT_PAGES = lambda app, window: toga.Command(
+        window.open_extract_pages_window,
+        text = _('Extract pages'),
+        #icon
+        tooltip = _('Extract one or more pages from current document'),
+        order = 20,
+        group = RootMenus.CREATE,
+        enabled = False,
+        id = 'extract_pages',
+    )
     MERGE = lambda app, window: toga.Command(
         window.open_merge_window,
         text = _('Merge'),
         shortcut = toga.Key.MOD_1 + 'M',
         icon = app.paths.app / 'resources/icons/merge.png',
         tooltip = _('Merge two or more PDF documents'),
-        order = 0,
+        order = 30,
         group = RootMenus.CREATE,
         enabled = True,
     )
 
     @classmethod
     def create_commands(cls, app, window, menu, toolbar):
-        for item in [CreateMenuItems.MERGE]:
+        for item in [
+            CreateMenuItems.EXTRACT_PAGE,
+            CreateMenuItems.EXTRACT_PAGES,
+            CreateMenuItems.MERGE,
+        ]:
             toolbar.add(item(app, window))
         for item in []:
             menu.add(item(app, window))
