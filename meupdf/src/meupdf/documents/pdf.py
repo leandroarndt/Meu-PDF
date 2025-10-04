@@ -122,6 +122,9 @@ class PDFDocument(GenericDocument):
             self.file_path = Path(new_path)
         if 'pymupdf' in sys.modules:
             self._document.save(self.file_path) # type: ignore
+    
+    def close(self):
+        self._document.close()
 
 document_formats[DOCUMENT_FORMAT] = {
         FormatInfos.FULL_NAME: _('Portable Document File'),

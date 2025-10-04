@@ -173,6 +173,7 @@ class MainWindow(toga.MainWindow):
             return
         try:
             tab = self.tab_area.current_tab
+            tab.close()
             i = self.tab_area.content.index(tab)
             if i == len(self.tab_area.content) - 1:
                 self.tab_area.current_tab = i - 1

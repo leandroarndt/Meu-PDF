@@ -31,3 +31,6 @@ class DocumentTab(toga.OptionItem):
         shutil.copyfile(file_path, server_dir / files_uri / self.document.hashed_path('.pdf'))
         task = asyncio.create_task(self.view.load_url(f'http://{host}:{port}/web/viewer.html?file=/{files_uri}/{self.document.hashed_path('.pdf')}'))
         task.add_done_callback(lambda task: self.view.evaluate_javascript(ready_script))
+
+    def close(self):
+        self.document.close()
